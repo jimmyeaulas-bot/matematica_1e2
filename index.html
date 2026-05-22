@@ -96,10 +96,16 @@
 </head>
 <body class="bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 min-h-screen transition-colors duration-200">
 
-  <!-- TELA 1: CRIAÇÃO DO HERÓI -->
-  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+  <!-- TELA 1: CRIAÇÃO DO HERÓI (Suporte completo a Tema Escuro e Botão de Alternância) -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 relative">
+    <div class="absolute top-4 right-4">
+      <button onclick="toggleTheme()" class="text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-100 transition px-3 py-1.5 text-xs bg-white dark:bg-stone-900 rounded-full border border-stone-200 dark:border-stone-800 shadow flex items-center gap-1.5 font-bold">
+        <i class="fa-solid fa-circle-half-stroke"></i> Tema
+      </button>
+    </div>
+
     <div class="max-w-md w-full parchment-scroll rounded-xl p-6 md:p-8 text-center border-4 border-medieval-gold">
-      <div class="text-4xl md:text-5xl text-medieval-amber mb-2"><i class="fa-solid fa-dice-d20 animate-bounce"></i></div>
+      <div class="text-4xl md:text-5xl text-medieval-amber dark:text-medieval-gold mb-2"><i class="fa-solid fa-dice-d20 animate-bounce"></i></div>
       <h1 class="text-3xl font-bold text-medieval-amber dark:text-medieval-gold mb-1">MATHGARD</h1>
       <p class="text-xs text-stone-600 dark:text-stone-400 uppercase tracking-widest mb-6">Trilha de Recuperação Matemática</p>
       
@@ -110,7 +116,7 @@
             <i class="fa-solid fa-user-shield"></i>
           </span>
           <input type="text" id="hero-name" placeholder="Ex: Sir Algebrador" 
-            class="w-full pl-10 pr-4 py-2 rounded border border-amber-300 dark:border-stone-700 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-medieval-gold">
+            class="w-full pl-10 pr-4 py-2 rounded border border-amber-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-medieval-gold">
         </div>
       </div>
 
@@ -122,7 +128,7 @@
             <input type="radio" name="hero-class" value="Warrior" checked class="sr-only peer">
             <div class="p-3 rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 peer-checked:border-medieval-gold peer-checked:ring-2 peer-checked:ring-medieval-gold hover:bg-amber-50 dark:hover:bg-stone-800 text-center transition">
               <span class="text-2xl block mb-1">🛡️</span>
-              <span class="text-xs font-bold block">Guerreiro</span>
+              <span class="text-xs font-bold block text-stone-800 dark:text-stone-200">Guerreiro</span>
               <span class="text-[10px] text-stone-500 block">+Vida</span>
             </div>
           </label>
@@ -131,7 +137,7 @@
             <input type="radio" name="hero-class" value="Mage" class="sr-only peer">
             <div class="p-3 rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 peer-checked:border-medieval-gold peer-checked:ring-2 peer-checked:ring-medieval-gold hover:bg-amber-50 dark:hover:bg-stone-800 text-center transition">
               <span class="text-2xl block mb-1">🧙‍♂️</span>
-              <span class="text-xs font-bold block">Mago</span>
+              <span class="text-xs font-bold block text-stone-800 dark:text-stone-200">Mago</span>
               <span class="text-[10px] text-stone-500 block">+Estudo</span>
             </div>
           </label>
@@ -140,7 +146,7 @@
             <input type="radio" name="hero-class" value="Rogue" class="sr-only peer">
             <div class="p-3 rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 peer-checked:border-medieval-gold peer-checked:ring-2 peer-checked:ring-medieval-gold hover:bg-amber-50 dark:hover:bg-stone-800 text-center transition">
               <span class="text-2xl block mb-1">🗡️</span>
-              <span class="text-xs font-bold block">Ladino</span>
+              <span class="text-xs font-bold block text-stone-800 dark:text-stone-200">Ladino</span>
               <span class="text-[10px] text-stone-500 block">+Ouro</span>
             </div>
           </label>
@@ -205,17 +211,24 @@
             </div>
             <span class="text-xs text-stone-400">ouro</span>
           </div>
-          <button onclick="toggleTheme()" class="text-stone-400 hover:text-white transition px-2 py-1 text-sm bg-stone-850 rounded border border-stone-800">
-            <i class="fa-solid fa-circle-half-stroke"></i>
-          </button>
+          
+          <div class="flex items-center gap-2">
+            <!-- Botão de reiniciar progresso -->
+            <button onclick="confirmResetProgress()" class="text-stone-400 hover:text-red-400 transition px-2 py-1 text-sm bg-stone-800 rounded border border-stone-700" title="Reiniciar Trilha">
+              <i class="fa-solid fa-arrow-rotate-left text-xs"></i>
+            </button>
+            <button onclick="toggleTheme()" class="text-stone-400 hover:text-white transition px-2 py-1 text-sm bg-stone-800 rounded border border-stone-700">
+              <i class="fa-solid fa-circle-half-stroke"></i>
+            </button>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- Estrutura Principal: Grade Lateral (Missões) + Painel Central -->
+    <!-- Estrutura Principal -->
     <main class="flex-1 max-w-7xl w-full mx-auto p-3 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
       
-      <!-- Lado Esquerdo: Lista de Missões (Aulas) -->
+      <!-- Lado Esquerdo: Lista de Missões -->
       <aside class="lg:col-span-1 flex flex-col gap-4">
         <!-- Mapa de Missões -->
         <div class="parchment-scroll rounded-xl p-4 border border-stone-300 dark:border-stone-800">
@@ -227,7 +240,7 @@
           </nav>
         </div>
 
-        <!-- Mercado da Guilda (Loja RPG de Recuperação) -->
+        <!-- Mercado da Guilda -->
         <div class="parchment-scroll rounded-xl p-4 border border-stone-300 dark:border-stone-800">
           <h3 class="font-bold text-medieval-amber dark:text-medieval-gold mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
             <i class="fa-solid fa-store"></i> Mercado da Guilda
@@ -255,17 +268,17 @@
         </div>
       </aside>
 
-      <!-- Centro: Área Ativa da Missão Selecionada -->
+      <!-- Centro: Área Ativa -->
       <section class="lg:col-span-3 flex flex-col gap-4">
-        <!-- Abas de Navegação da Missão -->
+        <!-- Abas de Navegação -->
         <div class="flex border-b border-stone-300 dark:border-stone-800">
           <button id="tab-btn-teoria" onclick="switchTab('teoria')" class="px-4 py-2 font-bold text-sm bg-stone-200 dark:bg-stone-900 border-t border-x border-stone-300 dark:border-stone-800 rounded-t-lg text-medieval-amber dark:text-medieval-gold">
             <i class="fa-solid fa-book-open mr-1"></i> 1. Pergaminho de Estudo
           </button>
-          <button id="tab-btn-combate" onclick="switchTab('combate')" class="px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg">
+          <button id="tab-btn-combate" onclick="switchTab('combate')" class="px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg text-stone-700 dark:text-stone-300">
             <i class="fa-solid fa-shield-halved mr-1"></i> 2. Arena de Combate
           </button>
-          <button id="tab-btn-resolucao" onclick="switchTab('resolucao')" class="px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg">
+          <button id="tab-btn-resolucao" onclick="switchTab('resolucao')" class="px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg text-stone-700 dark:text-stone-300">
             <i class="fa-solid fa-circle-check mr-1"></i> 3. Livro de Resoluções
           </button>
         </div>
@@ -279,16 +292,16 @@
             </div>
             <div class="text-right">
               <span class="text-xs text-stone-500 block">Dificuldade</span>
-              <span class="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-900">Média</span>
+              <span id="quest-difficulty-tag" class="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-900">Média</span>
             </div>
           </div>
 
-          <!-- Conteúdo da Aula de Matemática -->
+          <!-- Conteúdo da Aula -->
           <article id="quest-content" class="prose max-w-none dark:prose-invert text-stone-800 dark:text-stone-200 math-render text-sm md:text-base leading-relaxed space-y-4">
             <!-- Injetado dinamicamente -->
           </article>
 
-          <!-- Zona de Validação da Cópia do Caderno (Passo Crítico de Visto) -->
+          <!-- Zona de Validação da Cópia do Caderno -->
           <div class="bg-amber-50 dark:bg-stone-900/60 border-2 border-dashed border-medieval-gold p-6 rounded-lg text-center mt-6">
             <h4 class="font-extrabold text-lg text-medieval-amber dark:text-medieval-gold mb-2">📜 Registro para o Caderno (Passo de Visto)</h4>
             <p class="text-xs text-stone-600 dark:text-stone-400 max-w-md mx-auto mb-4">
@@ -316,13 +329,14 @@
 
           <!-- Luta Ativa se Liberado -->
           <div id="combate-ativo" class="hidden flex flex-col gap-6">
-            <!-- Elemento do Chefe / Monstro -->
+            <!-- Chefe / Monstro -->
             <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-lg bg-stone-900 text-stone-100 border border-stone-800 relative overflow-hidden">
               <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
               
               <div class="flex items-center gap-4 z-10">
                 <div id="boss-sprite" class="text-5xl md:text-6xl p-2 bg-stone-800 rounded-lg relative">
-                  🛡️
+                  <!-- Resolvido: Utilizando id 'boss-emoji' para maior segurança na manipulação do DOM -->
+                  <span id="boss-emoji">🛡️</span>
                   <!-- Efeito visual de Slash -->
                   <div id="combat-slash" class="hidden absolute inset-0 flex items-center justify-center text-red-600 text-4xl slash-effect">💥</div>
                 </div>
@@ -344,7 +358,7 @@
               </div>
             </div>
 
-            <!-- Painel da Pergunta do Combate -->
+            <!-- Painel da Pergunta -->
             <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-850 rounded-lg p-5">
               <div class="flex justify-between items-center mb-4">
                 <span class="text-xs bg-medieval-amber/10 dark:bg-medieval-gold/10 text-medieval-amber dark:text-medieval-gold px-2.5 py-1 rounded font-bold">
@@ -374,7 +388,7 @@
             </div>
           </div>
 
-          <!-- Combate Concluído para esta Quest -->
+          <!-- Combate Concluído -->
           <div id="combate-concluido" class="hidden text-center py-12">
             <span class="text-6xl block mb-4">🏆</span>
             <h3 class="text-2xl font-bold text-medieval-amber dark:text-medieval-gold">Guardião Derrotado!</h3>
@@ -398,7 +412,7 @@
           </div>
 
           <div id="resolucao-ativa" class="hidden math-render">
-            <!-- Conteúdo do Gabarito vindo do banco de dados JS -->
+            <!-- Conteúdo do Gabarito -->
           </div>
         </div>
       </section>
@@ -417,17 +431,17 @@
       </p>
 
       <div class="space-y-4">
-        <!-- Método 1: Código do Professor -->
+        <!-- Código do Professor -->
         <div class="border border-amber-200 dark:border-stone-800 p-3.5 rounded bg-amber-50/50 dark:bg-stone-900/40">
           <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-2">Opção A: Código Secreto do Mestre</label>
           <div class="flex gap-2">
-            <input type="password" id="professor-code" placeholder="Ex: MATHGARD" class="flex-1 px-3 py-1.5 rounded border border-amber-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-sm focus:outline-none">
+            <input type="password" id="professor-code" placeholder="Ex: MATHGARD" class="flex-1 px-3 py-1.5 rounded border border-amber-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-sm focus:outline-none text-stone-900 dark:text-stone-100">
             <button onclick="submitProfessorCode()" class="bg-medieval-amber hover:bg-amber-800 text-white font-bold text-xs px-4 rounded transition">Aplicar</button>
           </div>
           <span class="text-[10px] text-stone-500 block mt-1">Dica de Desenvolvimento: O código padrão é <strong class="text-medieval-amber">MATHGARD</strong></span>
         </div>
 
-        <!-- Método 2: Autocertificação -->
+        <!-- Autocertificação -->
         <div class="border border-stone-200 dark:border-stone-800 p-3.5 rounded bg-white dark:bg-stone-900/40">
           <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">Opção B: Autocertificação de Honra</label>
           <p class="text-[10px] text-stone-500 mb-3">Estuda por conta própria? Declare seu compromisso e prossiga.</p>
@@ -459,7 +473,7 @@
     </div>
   </div>
 
-  <!-- TELA DE CURA RÁPIDA (MINI JOGO DE CURA) -->
+  <!-- TELA DE CURA RÁPIDA -->
   <div id="quick-cura-screen" class="fixed inset-0 hidden items-center justify-center p-4 bg-stone-950/90 z-50">
     <div class="max-w-md w-full parchment-scroll p-6 rounded-xl border-4 border-green-600 text-center">
       <span class="text-5xl block mb-3">🪄</span>
@@ -473,7 +487,7 @@
       </div>
 
       <input type="number" id="quick-math-answer" placeholder="Digite o resultado" 
-        class="w-full text-center px-4 py-2 rounded border border-green-300 dark:border-stone-700 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-green-500 mb-4 font-bold text-lg">
+        class="w-full text-center px-4 py-2 rounded border border-green-300 dark:border-stone-700 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-green-500 mb-4 font-bold text-lg text-stone-900 dark:text-stone-100">
 
       <button onclick="submitQuickCura()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded transition">
         Canalizar Cura <i class="fa-solid fa-wand-sparkles ml-1"></i>
@@ -481,7 +495,7 @@
     </div>
   </div>
 
-  <!-- CERTIFICADO DE CONCLUSÃO DA TRILHA (ÁREA DE IMPRESSÃO) -->
+  <!-- CERTIFICADO DE CONCLUSÃO DA TRILHA -->
   <div id="certificate-print-area" class="hidden max-w-2xl mx-auto p-12 text-center border-8 border-double border-medieval-gold bg-amber-50/20 text-stone-950 my-12 shadow-2xl rounded-lg">
     <div class="mb-4 text-4xl text-medieval-amber"><i class="fa-solid fa-shield-halved"></i></div>
     <h1 class="text-3xl font-bold tracking-widest text-medieval-amber">CERTIFICADO DE MAESTRIA</h1>
@@ -507,7 +521,7 @@
     </div>
   </div>
 
-  <!-- 3. LÓGICA DO SISTEMA (JAVASCRIPT) -->
+  <!-- LÓGICA DO SISTEMA -->
   <script>
     // ESTRUTURA DE DADOS PRINCIPAL
     const classesData = [
@@ -649,7 +663,7 @@
           {
             id: 1,
             difficulty: "Fácil",
-            text: "Um carro viaja $240\\text{ km}$ em $3$ horas. Qual a sua velocidade média?",
+            text: "Um carro viaja $240\\text{ km}$ in $3$ horas. Qual a sua velocidade média?",
             options: ["$60\\text{ km/h}$", "$70\\text{ km/h}$", "$80\\text{ km/h}$", "$90\\text{ km/h}$"],
             correct: 2,
             hint: "Divida a distância total percorrida pelo tempo gasto: $V_m = \\frac{d}{t}$."
@@ -995,6 +1009,50 @@
     let currentQuestionIndex = 0;
     let activeQuickMathAnswer = 0;
 
+    // GERENCIAMENTO DE PERSISTÊNCIA (SALVAR/CARREGAR JOGO)
+    function saveProgress() {
+      if (!hero.name) return; // Evita salvar estados vazios antes do jogo começar
+      const gameData = {
+        hero: hero,
+        questStates: questStates,
+        activeQuestIndex: activeQuestIndex
+      };
+      localStorage.setItem("mathgard-gamedata", JSON.stringify(gameData));
+    }
+
+    function loadProgress() {
+      const rawData = localStorage.getItem("mathgard-gamedata");
+      if (rawData) {
+        try {
+          const gameData = JSON.parse(rawData);
+          if (gameData && gameData.hero && gameData.hero.name) {
+            hero = gameData.hero;
+            questStates = gameData.questStates;
+            activeQuestIndex = gameData.activeQuestIndex || 0;
+
+            // Pula a tela de login e mostra a arena diretamente
+            document.getElementById("login-screen").classList.add("hidden");
+            document.getElementById("app-screen").classList.remove("hidden");
+
+            updateHeaderStatus();
+            renderQuestMap();
+            loadQuest(activeQuestIndex);
+            return true;
+          }
+        } catch (e) {
+          console.error("Falha ao recuperar progresso antigo:", e);
+        }
+      }
+      return false;
+    }
+
+    function confirmResetProgress() {
+      if (confirm("Tem certeza que deseja reiniciar toda a sua jornada? Seu progresso atual, nível e ouro serão apagados de forma irreversível.")) {
+        localStorage.removeItem("mathgard-gamedata");
+        location.reload();
+      }
+    }
+
     // INICIALIZAÇÃO DA AVENTURA
     function initAdventure() {
       const nameInput = document.getElementById("hero-name").value.trim();
@@ -1047,6 +1105,7 @@
       updateHeaderStatus();
       renderQuestMap();
       loadQuest(0);
+      saveProgress(); // Salva estado inicial
     }
 
     // ATUALIZAR STATUS NO TOPO DO APP
@@ -1076,7 +1135,6 @@
         let statusIcon = "🔒";
         let colorClass = "opacity-50 pointer-events-none";
 
-        // Se for a primeira missão, ou se a anterior estiver completa, ela é destravada
         if (idx === 0 || questStates[idx - 1].completed) {
           colorClass = "border-amber-200 hover:bg-amber-50/50 dark:hover:bg-stone-900";
           statusIcon = "🛡️";
@@ -1152,7 +1210,7 @@
         
         // Setup do Boss
         document.getElementById("boss-name").innerText = quest.boss.name;
-        document.getElementById("boss-sprite").firstChild.textContent = quest.boss.img;
+        document.getElementById("boss-emoji").innerText = quest.boss.img;
         updateBossHpBar();
         loadQuestion(state.currentQuestion);
       }
@@ -1170,6 +1228,7 @@
       // Atualiza o mapa de classes e as fórmulas matemáticas via KaTeX
       renderQuestMap();
       triggerKaTeX();
+      saveProgress(); // Salva estado da página visitada
     }
 
     // TRANSIÇÃO DE ABAS
@@ -1189,9 +1248,9 @@
       tabCombate.classList.add("hidden");
       tabResolucao.classList.add("hidden");
 
-      btnTeoria.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg";
-      btnCombate.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg";
-      btnResolucao.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg";
+      btnTeoria.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg text-stone-700 dark:text-stone-300";
+      btnCombate.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg text-stone-700 dark:text-stone-300";
+      btnResolucao.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg text-stone-700 dark:text-stone-300";
 
       const activeBtnClass = "px-4 py-2 font-bold text-sm bg-stone-200 dark:bg-stone-900 border-t border-x border-stone-300 dark:border-stone-800 rounded-t-lg text-medieval-amber dark:text-medieval-gold";
 
@@ -1274,19 +1333,17 @@
       });
 
       triggerKaTeX();
+      saveProgress(); // Salva progresso na pergunta ativa
     }
 
     // SELECIONAR E AVALIAR RESPOSTA NA ARENA
     function selectAnswer(optIndex) {
       const quest = classesData[activeQuestIndex];
-      const state = questStates[activeQuestIndex];
       const question = quest.questions[currentQuestionIndex];
 
       if (optIndex === question.correct) {
-        // Sucesso: Atacar o Boss
         applyBossDamage();
       } else {
-        // Falha: Player toma dano
         applyPlayerDamage();
       }
     }
@@ -1296,11 +1353,9 @@
       const quest = classesData[activeQuestIndex];
       const state = questStates[activeQuestIndex];
       
-      // O monstro toma dano correspondente a 1/5 da vida máxima dele por acerto
       const damage = quest.boss.maxHp / 5;
       state.bossHp = Math.max(0, state.bossHp - damage);
 
-      // Animações de ataque
       const sprite = document.getElementById("boss-sprite");
       sprite.classList.add("boss-shake");
       const slash = document.getElementById("combat-slash");
@@ -1318,34 +1373,32 @@
       gainGold(4);
 
       if (state.bossHp <= 0) {
-        // Vitória contra o boss
         state.completed = true;
         gainXp(40);
         gainGold(15);
         loadQuest(activeQuestIndex);
         checkGlobalCompletion();
       } else {
-        // Próxima pergunta
         const nextQ = currentQuestionIndex + 1;
         if (nextQ < quest.questions.length) {
           loadQuestion(nextQ);
         } else {
-          // Caso incomum, se passar as perguntas mas boss tiver vida (reseta perguntas)
           loadQuestion(0);
         }
       }
+      saveProgress();
     }
 
     // PLAYER RECEBE DANO POR ERRO
     function applyPlayerDamage() {
-      // Dano fixo de 20 HP por erro
       hero.hp = Math.max(0, hero.hp - 20);
       updateHeaderStatus();
 
-      // Flash vermelho na tela
       const appBody = document.getElementById("app-screen");
       appBody.classList.add("bg-red-500/10");
       setTimeout(() => appBody.classList.remove("bg-red-500/10"), 200);
+
+      saveProgress();
 
       if (hero.hp <= 0) {
         openModal("modal-defeat");
@@ -1369,7 +1422,6 @@
       const question = quest.questions[currentQuestionIndex];
       const hintDisplay = document.getElementById("hint-display");
 
-      // Verificar Ouro ou gratuidade para magos
       if (hero.class === "Mage" || hero.gold >= 5) {
         if (hero.class !== "Mage") {
           hero.gold -= 5;
@@ -1378,6 +1430,7 @@
         hintDisplay.innerHTML = question.hint;
         hintDisplay.classList.remove("hidden");
         triggerKaTeX();
+        saveProgress();
       } else {
         alert("Você não possui moedas de ouro suficientes para comprar este conselho arcano!");
       }
@@ -1391,6 +1444,7 @@
           hero.hp = Math.min(hero.maxHp, hero.hp + 50);
           updateHeaderStatus();
           alert("Poção consumida! +50 Pontos de Vida (HP).");
+          saveProgress();
         } else {
           alert("Ouro insuficiente para comprar a poção de cura.");
         }
@@ -1399,6 +1453,7 @@
           hero.gold -= 5;
           updateHeaderStatus();
           alert("Pergaminho comprado! Use-o clicando em 'Ver dica da questão' na Arena.");
+          saveProgress();
         } else {
           alert("Ouro insuficiente.");
         }
@@ -1412,6 +1467,7 @@
         hero.hp = Math.min(hero.maxHp, hero.hp + 50);
         updateHeaderStatus();
         closeModal("modal-defeat");
+        saveProgress();
       } else {
         alert("Sua bolsa está vazia! Realize o Rito de Cura Rápida resolvendo os desafios fundamentais.");
       }
@@ -1421,7 +1477,6 @@
       closeModal("modal-defeat");
       document.getElementById("quick-cura-screen").classList.remove("hidden");
       
-      // Gera conta matemática simples aleatória
       const n1 = Math.floor(Math.random() * 8) + 2;
       const n2 = Math.floor(Math.random() * 8) + 2;
       activeQuickMathAnswer = n1 * n2;
@@ -1432,10 +1487,11 @@
     function submitQuickCura() {
       const ans = parseInt(document.getElementById("quick-math-answer").value);
       if (ans === activeQuickMathAnswer) {
-        hero.hp = Math.round(hero.maxHp * 0.5); // cura 50% da vida total
+        hero.hp = Math.round(hero.maxHp * 0.5); 
         updateHeaderStatus();
         document.getElementById("quick-cura-screen").classList.add("hidden");
         alert("Cura mental bem sucedida! Suas energias foram restauradas.");
+        saveProgress();
       } else {
         alert("Resposta errada. O fluxo de magia falhou! Tente novamente.");
         triggerQuickCura();
@@ -1450,15 +1506,17 @@
         hero.xp -= hero.nextLevelXp;
         hero.nextLevelXp = Math.round(hero.nextLevelXp * 1.5);
         hero.maxHp = Math.round(hero.maxHp * 1.15);
-        hero.hp = hero.maxHp; // Cura ao passar de nível
+        hero.hp = hero.maxHp; 
         alert(`✨ EVOLUÇÃO! Você atingiu o Nível ${hero.level}! Seu HP máximo aumentou.`);
       }
       updateHeaderStatus();
+      saveProgress();
     }
 
     function gainGold(amount) {
       hero.gold += Math.round(amount * hero.goldMultiplier);
       updateHeaderStatus();
+      saveProgress();
     }
 
     // VERIFICA SE TODAS AS QUESTS FORAM CONCLUÍDAS
@@ -1478,7 +1536,6 @@
       const certArea = document.getElementById("certificate-print-area");
       certArea.classList.remove("hidden");
       
-      // Adiciona botão para imprimir no painel central
       const activeQuestContent = document.getElementById("quest-content");
       activeQuestContent.innerHTML = `
         <div class="text-center bg-green-500/10 p-6 rounded-lg border-2 border-green-500 my-4">
@@ -1508,23 +1565,50 @@
     // MUDAR TEMA CLARO/ESCURO
     function toggleTheme() {
       document.documentElement.classList.toggle("dark");
+      const isDark = document.documentElement.classList.contains("dark");
+      localStorage.setItem("mathgard-theme", isDark ? "dark" : "light");
     }
+
+    // CARREGAMENTO DE PERSISTÊNCIA INICIAL
+    window.addEventListener("DOMContentLoaded", () => {
+      // 1. Carrega preferência de tema
+      const savedTheme = localStorage.getItem("mathgard-theme");
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else if (savedTheme === "light") {
+        document.documentElement.classList.remove("dark");
+      } else {
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.classList.add("dark");
+        }
+      }
+
+      // 2. Carrega progresso do jogo
+      loadProgress();
+    });
 
     // GATILHO DE RENDERIZAÇÃO DO KATEX
     function triggerKaTeX() {
-      // Procura todas as classes com .math-render e processa o KaTeX
-      const containers = document.querySelectorAll(".math-render");
-      containers.forEach(container => {
-        renderMathInElement(container, {
-          delimiters: [
-            { left: "$$", right: "$$", display: true },
-            { left: "$", right: "$", display: false },
-            { left: "\\(", right: "\\)", display: false },
-            { left: "\\[", right: "\\]", display: true }
-          ],
-          throwOnError: false
+      if (typeof renderMathInElement === "function") {
+        const containers = document.querySelectorAll(".math-render");
+        containers.forEach(container => {
+          try {
+            renderMathInElement(container, {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+              ],
+              throwOnError: false
+            });
+          } catch (e) {
+            console.warn("KaTeX falhou ao renderizar:", e);
+          }
         });
-      });
+      } else {
+        console.warn("Biblioteca KaTeX não disponível.");
+      }
     }
   </script>
 </body>
