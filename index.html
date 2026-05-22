@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mathgard - Trilha de Recuperação Matemática</title>
+  
+  <!-- Dependências Síncronas do KaTeX para Renderização Segura -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tailwind CSS para Estilização -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            parchment: {
+              DEFAULT: '#f9f6f0',
+              dark: '#fcf8f2',
+              border: '#e6d7b8'
+            },
+            medieval: {
+              gold: '#d4af37',
+              darkgold: '#aa820a',
+              amber: '#b45309',
+              slate: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- FontAwesome para Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Estilos Customizados para RPG e Fórmulas */
+    body {
+      font-family: 'Georgia', serif;
+    }
+    .parchment-scroll {
+      background-color: #fbf6eb;
+      background-image: radial-gradient(#fff9ed 30%, transparent 120%);
+      border: 2px solid #dfc79b;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06), inset 0 0 40px #f3e5c8;
+    }
+    .dark .parchment-scroll {
+      background-color: #1e1b18;
+      background-image: none;
+      border: 2px solid #524231;
+      box-shadow: inset 0 0 40px #2a221a;
+    }
+    
+    /* Correção do KaTeX no Modo Escuro */
+    .dark .katex { color: #f3f4f6 !important; }
+    
+    /* Animação de Combate */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+    .boss-shake {
+      animation: shake 0.4s ease-in-out;
+    }
+    
+    @keyframes slash {
+      0% { opacity: 0; transform: scale(0.5) rotate(-45deg); }
+      50% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+      100% { opacity: 0; transform: scale(1) rotate(0deg); }
+    }
+    .slash-effect {
+      animation: slash 0.5s ease-out forwards;
+    }
+
+    /* Regras de Impressão do Certificado */
+    @media print {
+      body * { visibility: hidden; }
+      #certificate-print-area, #certificate-print-area * { visibility: visible; }
+      #certificate-print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: 10px double #aa820a !important;
+        background: white !important;
+        color: black !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-100 min-h-screen transition-colors duration-200">
+
+  <!-- TELA 1: CRIAÇÃO DO HERÓI -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full parchment-scroll rounded-xl p-6 md:p-8 text-center border-4 border-medieval-gold">
+      <div class="text-4xl md:text-5xl text-medieval-amber mb-2"><i class="fa-solid fa-dice-d20 animate-bounce"></i></div>
+      <h1 class="text-3xl font-bold text-medieval-amber dark:text-medieval-gold mb-1">MATHGARD</h1>
+      <p class="text-xs text-stone-600 dark:text-stone-400 uppercase tracking-widest mb-6">Trilha de Recuperação Matemática</p>
+      
+      <div class="mb-6 text-left">
+        <label class="block text-sm font-bold mb-2 text-stone-700 dark:text-stone-300">Como os escribas devem chamar você?</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-stone-500">
+            <i class="fa-solid fa-user-shield"></i>
+          </span>
+          <input type="text" id="hero-name" placeholder="Ex: Sir Algebrador" 
+            class="w-full pl-10 pr-4 py-2 rounded border border-amber-300 dark:border-stone-700 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-medieval-gold">
+        </div>
+      </div>
+
+      <div class="mb-6 text-left">
+        <label class="block text-sm font-bold mb-2 text-stone-700 dark:text-stone-300">Escolha seu Arquétipo de Aprendizagem:</label>
+        <div class="grid grid-cols-3 gap-2">
+          <!-- Classe 1: Guerreiro -->
+          <label class="cursor-pointer">
+            <input type="radio" name="hero-class" value="Warrior" checked class="sr-only peer">
+            <div class="p-3 rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 peer-checked:border-medieval-gold peer-checked:ring-2 peer-checked:ring-medieval-gold hover:bg-amber-50 dark:hover:bg-stone-800 text-center transition">
+              <span class="text-2xl block mb-1">🛡️</span>
+              <span class="text-xs font-bold block">Guerreiro</span>
+              <span class="text-[10px] text-stone-500 block">+Vida</span>
+            </div>
+          </label>
+          <!-- Classe 2: Mago -->
+          <label class="cursor-pointer">
+            <input type="radio" name="hero-class" value="Mage" class="sr-only peer">
+            <div class="p-3 rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 peer-checked:border-medieval-gold peer-checked:ring-2 peer-checked:ring-medieval-gold hover:bg-amber-50 dark:hover:bg-stone-800 text-center transition">
+              <span class="text-2xl block mb-1">🧙‍♂️</span>
+              <span class="text-xs font-bold block">Mago</span>
+              <span class="text-[10px] text-stone-500 block">+Estudo</span>
+            </div>
+          </label>
+          <!-- Classe 3: Ladino -->
+          <label class="cursor-pointer">
+            <input type="radio" name="hero-class" value="Rogue" class="sr-only peer">
+            <div class="p-3 rounded border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 peer-checked:border-medieval-gold peer-checked:ring-2 peer-checked:ring-medieval-gold hover:bg-amber-50 dark:hover:bg-stone-800 text-center transition">
+              <span class="text-2xl block mb-1">🗡️</span>
+              <span class="text-xs font-bold block">Ladino</span>
+              <span class="text-[10px] text-stone-500 block">+Ouro</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <button onclick="initAdventure()" class="w-full bg-medieval-amber hover:bg-amber-800 text-white font-bold py-3 px-6 rounded shadow-lg transform transition active:scale-95">
+        Iniciar Aventura <i class="fa-solid fa-scroll ml-2"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- TELA 2: DASHBOARD E ARENA DO RPG -->
+  <div id="app-screen" class="hidden min-h-screen flex flex-col">
+    <!-- Header de Status RPG do Aluno -->
+    <header class="bg-stone-900 text-stone-100 border-b border-stone-800 py-3 px-4 shadow-md sticky top-0 z-10">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+        <!-- Esquerda: Info Básica -->
+        <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+          <div class="flex items-center gap-2">
+            <span id="hero-avatar-display" class="text-2xl">🛡️</span>
+            <div>
+              <h2 id="hero-name-display" class="font-bold text-sm md:text-base leading-tight">Nome do Herói</h2>
+              <span id="hero-class-display" class="text-[11px] uppercase text-stone-400">Guerreiro</span>
+            </div>
+          </div>
+          <div class="bg-medieval-gold text-stone-900 text-xs font-extrabold px-3 py-1 rounded-full shadow-inner flex items-center gap-1">
+            NÍVEL <span id="hero-level">1</span>
+          </div>
+        </div>
+
+        <!-- Centro: Barras de Status -->
+        <div class="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto flex-1 max-w-lg">
+          <!-- Vida (HP) -->
+          <div class="flex-1">
+            <div class="flex justify-between text-[11px] font-bold mb-1">
+              <span><i class="fa-solid fa-heart text-red-500 mr-1"></i> Pontos de Vida (HP)</span>
+              <span id="hp-text">100/100</span>
+            </div>
+            <div class="w-full bg-stone-800 h-3 rounded overflow-hidden p-[2px] border border-stone-700">
+              <div id="hp-bar" class="bg-red-600 h-full rounded transition-all duration-300" style="width: 100%;"></div>
+            </div>
+          </div>
+          <!-- Experiência (XP) -->
+          <div class="flex-1">
+            <div class="flex justify-between text-[11px] font-bold mb-1">
+              <span><i class="fa-solid fa-star text-amber-400 mr-1"></i> Experiência (XP)</span>
+              <span id="xp-text">0/100</span>
+            </div>
+            <div class="w-full bg-stone-800 h-3 rounded overflow-hidden p-[2px] border border-stone-700">
+              <div id="xp-bar" class="bg-amber-400 h-full rounded transition-all duration-300" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direita: Economia e Utilidades -->
+        <div class="flex items-center gap-4 justify-between w-full md:w-auto">
+          <div class="flex items-center gap-2">
+            <div class="text-yellow-500 text-lg flex items-center gap-1">
+              <i class="fa-solid fa-coins animate-pulse"></i>
+              <span id="hero-gold" class="font-extrabold text-sm md:text-base">0</span>
+            </div>
+            <span class="text-xs text-stone-400">ouro</span>
+          </div>
+          <button onclick="toggleTheme()" class="text-stone-400 hover:text-white transition px-2 py-1 text-sm bg-stone-850 rounded border border-stone-800">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Estrutura Principal: Grade Lateral (Missões) + Painel Central -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-3 md:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+      
+      <!-- Lado Esquerdo: Lista de Missões (Aulas) -->
+      <aside class="lg:col-span-1 flex flex-col gap-4">
+        <!-- Mapa de Missões -->
+        <div class="parchment-scroll rounded-xl p-4 border border-stone-300 dark:border-stone-800">
+          <h3 class="font-bold text-medieval-amber dark:text-medieval-gold mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-map-location-dot"></i> Pergaminho de Missões
+          </h3>
+          <nav id="quest-list" class="space-y-2">
+            <!-- Gerado via JavaScript -->
+          </nav>
+        </div>
+
+        <!-- Mercado da Guilda (Loja RPG de Recuperação) -->
+        <div class="parchment-scroll rounded-xl p-4 border border-stone-300 dark:border-stone-800">
+          <h3 class="font-bold text-medieval-amber dark:text-medieval-gold mb-3 text-sm uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-store"></i> Mercado da Guilda
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-2 rounded bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-850">
+              <div class="text-xs">
+                <span class="font-bold block text-stone-850 dark:text-stone-200">🧪 Poção de Vida (+50 HP)</span>
+                <span class="text-[10px] text-stone-500">Recupere suas forças para combater.</span>
+              </div>
+              <button onclick="buyItem('potion')" class="bg-yellow-500 hover:bg-yellow-600 text-stone-950 font-extrabold text-xs py-1.5 px-3 rounded shadow transition">
+                15 <i class="fa-solid fa-coins"></i>
+              </button>
+            </div>
+            <div class="flex items-center justify-between p-2 rounded bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-850">
+              <div class="text-xs">
+                <span class="font-bold block text-stone-850 dark:text-stone-200">🔍 Pergaminho de Dica</span>
+                <span class="text-[10px] text-stone-500">Revela instantaneamente a dica.</span>
+              </div>
+              <button onclick="buyItem('hint')" class="bg-yellow-500 hover:bg-yellow-600 text-stone-950 font-extrabold text-xs py-1.5 px-3 rounded shadow transition">
+                5 <i class="fa-solid fa-coins"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Centro: Área Ativa da Missão Selecionada -->
+      <section class="lg:col-span-3 flex flex-col gap-4">
+        <!-- Abas de Navegação da Missão -->
+        <div class="flex border-b border-stone-300 dark:border-stone-800">
+          <button id="tab-btn-teoria" onclick="switchTab('teoria')" class="px-4 py-2 font-bold text-sm bg-stone-200 dark:bg-stone-900 border-t border-x border-stone-300 dark:border-stone-800 rounded-t-lg text-medieval-amber dark:text-medieval-gold">
+            <i class="fa-solid fa-book-open mr-1"></i> 1. Pergaminho de Estudo
+          </button>
+          <button id="tab-btn-combate" onclick="switchTab('combate')" class="px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg">
+            <i class="fa-solid fa-shield-halved mr-1"></i> 2. Arena de Combate
+          </button>
+          <button id="tab-btn-resolucao" onclick="switchTab('resolucao')" class="px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg">
+            <i class="fa-solid fa-circle-check mr-1"></i> 3. Livro de Resoluções
+          </button>
+        </div>
+
+        <!-- ABA 1: CONTEÚDO E TEORIA -->
+        <div id="tab-teoria" class="parchment-scroll rounded-xl p-5 md:p-8 border border-stone-300 dark:border-stone-800 flex flex-col gap-6">
+          <div class="flex justify-between items-start border-b border-stone-300 dark:border-stone-800 pb-4">
+            <div>
+              <span id="quest-bimestre" class="text-xs font-bold uppercase tracking-wider text-medieval-amber">1º Bimestre</span>
+              <h1 id="quest-title" class="text-2xl md:text-3xl font-extrabold text-stone-900 dark:text-stone-100">Título da Aula</h1>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-stone-500 block">Dificuldade</span>
+              <span class="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-900">Média</span>
+            </div>
+          </div>
+
+          <!-- Conteúdo da Aula de Matemática -->
+          <article id="quest-content" class="prose max-w-none dark:prose-invert text-stone-800 dark:text-stone-200 math-render text-sm md:text-base leading-relaxed space-y-4">
+            <!-- Injetado dinamicamente -->
+          </article>
+
+          <!-- Zona de Validação da Cópia do Caderno (Passo Crítico de Visto) -->
+          <div class="bg-amber-50 dark:bg-stone-900/60 border-2 border-dashed border-medieval-gold p-6 rounded-lg text-center mt-6">
+            <h4 class="font-extrabold text-lg text-medieval-amber dark:text-medieval-gold mb-2">📜 Registro para o Caderno (Passo de Visto)</h4>
+            <p class="text-xs text-stone-600 dark:text-stone-400 max-w-md mx-auto mb-4">
+              Para desbloquear a Arena de Combate e enfrentar os monstros, registre os conceitos-chave desta aula em seu caderno físico. Apresente-o ao Mestre da Guilda (Professor) ou assine a autodeclaração para ganhar o visto.
+            </p>
+            <div id="visto-action-area" class="flex flex-col sm:flex-row gap-3 justify-center max-w-sm mx-auto">
+              <button onclick="requestVisto()" class="flex-1 bg-medieval-amber hover:bg-amber-800 text-white font-bold py-2 px-4 rounded text-sm transition">
+                <i class="fa-solid fa-pen-nib mr-2"></i> Solicitar Visto
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ABA 2: ARENA DE COMBATE -->
+        <div id="tab-combate" class="hidden parchment-scroll rounded-xl p-5 md:p-8 border border-stone-300 dark:border-stone-800 flex flex-col gap-6">
+          
+          <!-- Luta Bloqueada se não tiver Visto -->
+          <div id="combate-bloqueado" class="text-center py-12">
+            <span class="text-5xl block mb-4">🔒</span>
+            <h3 class="text-xl font-bold text-stone-800 dark:text-stone-200">Combate Bloqueado!</h3>
+            <p class="text-sm text-stone-600 dark:text-stone-400 max-w-md mx-auto mt-2">
+              Você precisa estudar o pergaminho de conhecimento e assinar/conseguir o visto no caderno físico (Aba 1) antes de enfrentar o guardião desta masmorra.
+            </p>
+          </div>
+
+          <!-- Luta Ativa se Liberado -->
+          <div id="combate-ativo" class="hidden flex flex-col gap-6">
+            <!-- Elemento do Chefe / Monstro -->
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-lg bg-stone-900 text-stone-100 border border-stone-800 relative overflow-hidden">
+              <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              
+              <div class="flex items-center gap-4 z-10">
+                <div id="boss-sprite" class="text-5xl md:text-6xl p-2 bg-stone-800 rounded-lg relative">
+                  🛡️
+                  <!-- Efeito visual de Slash -->
+                  <div id="combat-slash" class="hidden absolute inset-0 flex items-center justify-center text-red-600 text-4xl slash-effect">💥</div>
+                </div>
+                <div>
+                  <span class="text-[10px] tracking-widest uppercase text-stone-400">Guardião da Masmorra</span>
+                  <h3 id="boss-name" class="font-extrabold text-lg text-medieval-gold">Nome do Monstro</h3>
+                </div>
+              </div>
+
+              <!-- HP do Monstro -->
+              <div class="w-full md:w-64 z-10">
+                <div class="flex justify-between text-[11px] font-bold mb-1 text-stone-300">
+                  <span>HP do Guardião</span>
+                  <span id="boss-hp-text">100/100</span>
+                </div>
+                <div class="w-full bg-stone-800 h-3 rounded overflow-hidden p-[2px] border border-stone-700">
+                  <div id="boss-hp-bar" class="bg-rose-600 h-full rounded transition-all duration-300" style="width: 100%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Painel da Pergunta do Combate -->
+            <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-850 rounded-lg p-5">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-xs bg-medieval-amber/10 dark:bg-medieval-gold/10 text-medieval-amber dark:text-medieval-gold px-2.5 py-1 rounded font-bold">
+                  Problema <span id="current-question-num">1</span> de 5
+                </span>
+                <span id="current-question-difficulty" class="text-xs text-stone-500 font-bold">Fácil</span>
+              </div>
+
+              <div id="question-text" class="text-base md:text-lg text-stone-800 dark:text-stone-100 math-render mb-6 font-semibold">
+                Pergunta matemática de combate aqui...
+              </div>
+
+              <!-- Opções de Resposta -->
+              <div id="question-options" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+                <!-- Gerado via JavaScript -->
+              </div>
+
+              <!-- Barra de Dica integrada -->
+              <div class="flex items-center justify-between border-t border-stone-150 dark:border-stone-850 pt-4">
+                <button onclick="revealHint()" class="text-xs font-bold text-stone-500 dark:text-stone-400 hover:text-medieval-amber transition flex items-center gap-1">
+                  <i class="fa-solid fa-lightbulb"></i> Ver dica da questão (Gasta 5 moedas de ouro)
+                </button>
+                <div id="hint-display" class="hidden text-xs text-stone-600 dark:text-stone-400 max-w-md text-right italic math-render">
+                  <!-- Dica -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Combate Concluído para esta Quest -->
+          <div id="combate-concluido" class="hidden text-center py-12">
+            <span class="text-6xl block mb-4">🏆</span>
+            <h3 class="text-2xl font-bold text-medieval-amber dark:text-medieval-gold">Guardião Derrotado!</h3>
+            <p class="text-sm text-stone-600 dark:text-stone-400 max-w-md mx-auto mt-2">
+              Você provou sua mestria matemática e livrou o reino de mais uma ameaça intelectual. O pergaminho com a resolução detalhada de todos os problemas foi destravado!
+            </p>
+            <button onclick="switchTab('resolucao')" class="mt-6 bg-medieval-amber hover:bg-amber-800 text-white font-bold py-2.5 px-6 rounded shadow transition">
+              Acessar Resoluções da Aula <i class="fa-solid fa-circle-chevron-right ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ABA 3: PERGAMINHO DE RESOLUÇÕES (GABARITO) -->
+        <div id="tab-resolucao" class="hidden parchment-scroll rounded-xl p-5 md:p-8 border border-stone-300 dark:border-stone-800 flex flex-col gap-6">
+          <div id="resolucao-bloqueada" class="text-center py-12">
+            <span class="text-5xl block mb-4">🛡️</span>
+            <h3 class="text-xl font-bold text-stone-800 dark:text-stone-200">Resolução Trancada!</h3>
+            <p class="text-sm text-stone-600 dark:text-stone-400 max-w-md mx-auto mt-2">
+              Derrote o monstro desta masmorra na Arena de Combate para obter acesso ao gabarito analítico comentado pelo Professor da Guilda.
+            </p>
+          </div>
+
+          <div id="resolucao-ativa" class="hidden math-render">
+            <!-- Conteúdo do Gabarito vindo do banco de dados JS -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL: VALIDAÇÃO DE VISTO -->
+  <div id="modal-visto" class="fixed inset-0 hidden items-center justify-center p-4 bg-stone-950/75 backdrop-blur-sm z-50">
+    <div class="max-w-md w-full parchment-scroll p-6 rounded-xl border-4 border-medieval-gold shadow-2xl relative">
+      <button onclick="closeModal('modal-visto')" class="absolute top-3 right-3 text-stone-500 hover:text-stone-800 dark:hover:text-stone-200">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <h3 class="text-xl font-extrabold text-medieval-amber mb-3 text-center"><i class="fa-solid fa-pen-nib mr-1"></i> Visto do Mestre</h3>
+      <p class="text-xs text-stone-600 dark:text-stone-400 mb-4 text-center">
+        O seu mestre de guilda (professor) deve inspecionar o seu caderno para autorizar a batalha. Digite a senha mágica ou selecione a autocertificação para avançar.
+      </p>
+
+      <div class="space-y-4">
+        <!-- Método 1: Código do Professor -->
+        <div class="border border-amber-200 dark:border-stone-800 p-3.5 rounded bg-amber-50/50 dark:bg-stone-900/40">
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-2">Opção A: Código Secreto do Mestre</label>
+          <div class="flex gap-2">
+            <input type="password" id="professor-code" placeholder="Ex: MATHGARD" class="flex-1 px-3 py-1.5 rounded border border-amber-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-sm focus:outline-none">
+            <button onclick="submitProfessorCode()" class="bg-medieval-amber hover:bg-amber-800 text-white font-bold text-xs px-4 rounded transition">Aplicar</button>
+          </div>
+          <span class="text-[10px] text-stone-500 block mt-1">Dica de Desenvolvimento: O código padrão é <strong class="text-medieval-amber">MATHGARD</strong></span>
+        </div>
+
+        <!-- Método 2: Autocertificação -->
+        <div class="border border-stone-200 dark:border-stone-800 p-3.5 rounded bg-white dark:bg-stone-900/40">
+          <label class="block text-xs font-bold text-stone-700 dark:text-stone-300 mb-1">Opção B: Autocertificação de Honra</label>
+          <p class="text-[10px] text-stone-500 mb-3">Estuda por conta própria? Declare seu compromisso e prossiga.</p>
+          <button onclick="signHonra()" class="w-full bg-stone-800 hover:bg-stone-900 dark:bg-stone-700 dark:hover:bg-stone-600 text-white text-xs font-bold py-2 px-4 rounded transition">
+            <i class="fa-solid fa-ribbon mr-1"></i> Juro pela minha honra que registrei no caderno
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DERROTA / HP ZERO -->
+  <div id="modal-defeat" class="fixed inset-0 hidden items-center justify-center p-4 bg-stone-950/80 backdrop-blur-sm z-50">
+    <div class="max-w-md w-full parchment-scroll p-6 rounded-xl border-4 border-red-600 shadow-2xl text-center">
+      <span class="text-6xl block mb-4">💀</span>
+      <h3 class="text-2xl font-extrabold text-red-600 mb-2">Suas forças esgotaram!</h3>
+      <p class="text-xs text-stone-600 dark:text-stone-400 mb-6">
+        Seus pontos de vida (HP) chegaram ao fim. Você pode reabastecer suas forças na loja da guilda comprando poções de vida com suas moedas acumuladas, ou realizar um rito rápido de cura intelectual.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button onclick="healFromShop()" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-stone-950 font-bold py-2.5 px-4 rounded text-xs transition">
+          Comprar Poção (15 <i class="fa-solid fa-coins"></i>)
+        </button>
+        <button onclick="triggerQuickCura()" class="flex-1 bg-medieval-amber hover:bg-amber-800 text-white font-bold py-2.5 px-4 rounded text-xs transition">
+          Rito de Cura Rápida (Estudo Básicos)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA DE CURA RÁPIDA (MINI JOGO DE CURA) -->
+  <div id="quick-cura-screen" class="fixed inset-0 hidden items-center justify-center p-4 bg-stone-950/90 z-50">
+    <div class="max-w-md w-full parchment-scroll p-6 rounded-xl border-4 border-green-600 text-center">
+      <span class="text-5xl block mb-3">🪄</span>
+      <h3 class="text-xl font-extrabold text-green-700 dark:text-green-500 mb-2">Rito Cósmico de Cura</h3>
+      <p class="text-xs text-stone-600 dark:text-stone-400 mb-4">
+        Responda corretamente esta operação básica de aritmética para recuperar instantaneamente +50 de HP e continuar a jornada.
+      </p>
+
+      <div class="bg-white dark:bg-stone-900 border p-4 rounded-lg mb-4 text-xl font-bold text-stone-850 dark:text-stone-100">
+        <span id="quick-math-expr">6 x 7 = ?</span>
+      </div>
+
+      <input type="number" id="quick-math-answer" placeholder="Digite o resultado" 
+        class="w-full text-center px-4 py-2 rounded border border-green-300 dark:border-stone-700 bg-white dark:bg-stone-900 focus:outline-none focus:ring-2 focus:ring-green-500 mb-4 font-bold text-lg">
+
+      <button onclick="submitQuickCura()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded transition">
+        Canalizar Cura <i class="fa-solid fa-wand-sparkles ml-1"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- CERTIFICADO DE CONCLUSÃO DA TRILHA (ÁREA DE IMPRESSÃO) -->
+  <div id="certificate-print-area" class="hidden max-w-2xl mx-auto p-12 text-center border-8 border-double border-medieval-gold bg-amber-50/20 text-stone-950 my-12 shadow-2xl rounded-lg">
+    <div class="mb-4 text-4xl text-medieval-amber"><i class="fa-solid fa-shield-halved"></i></div>
+    <h1 class="text-3xl font-bold tracking-widest text-medieval-amber">CERTIFICADO DE MAESTRIA</h1>
+    <p class="text-xs font-sans tracking-widest uppercase mt-2 mb-8">Guilda dos Alquimistas de Mathgard</p>
+    
+    <p class="text-sm italic mb-4">Certificamos solenemente que o(a) ilustre herói/heroína</p>
+    <h2 id="cert-hero-name" class="text-2xl font-extrabold border-b border-stone-300 max-w-md mx-auto pb-1 mb-6 text-stone-900">Sir Algebrador</h2>
+    
+    <p class="text-sm max-w-lg mx-auto leading-relaxed mb-8">
+      concluiu todas as etapas da masmorra de recuperação, derrotando com bravura os guardiões dos conceitos de <strong class="text-medieval-amber font-bold">Sistemas de Medidas, Grandezas, Álgebra, Funções do Primeiro Grau e Ladrilhamentos</strong>, alcançando a mestria plena dos saberes matemáticos.
+    </p>
+
+    <div class="flex justify-between items-end mt-12 text-xs">
+      <div class="text-left">
+        <span class="block border-t border-stone-400 pt-1 w-36 text-center">Mestre de Guilda</span>
+      </div>
+      <div>
+        <p class="text-[10px] text-stone-500">Emitido por Mathgard Engine</p>
+      </div>
+      <div class="text-right">
+        <span class="block border-t border-stone-400 pt-1 w-36 text-center">Aprendiz Registrado</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. LÓGICA DO SISTEMA (JAVASCRIPT) -->
+  <script>
+    // ESTRUTURA DE DADOS PRINCIPAL
+    const classesData = [
+      {
+        id: 1,
+        title: "Sistemas e Unidades de Medida",
+        boss: { name: "O Golem de Bronze (Guardião do Padrão)", maxHp: 100, hp: 100, img: "🛡️" },
+        bimestre: "1º Bimestre",
+        teoria: `
+          <p class="mb-4">A Matemática é a linguagem da natureza, mas para medir a natureza, precisamos de um padrão. O <strong>Sistema Internacional (SI)</strong> garante que 1 metro no Brasil seja igual a 1 metro no Japão.</p>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">🛡️ 1. Grandezas Fundamentais do SI:</h4>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Comprimento:</strong> Metro ($m$).</li>
+              <li><strong>Massa:</strong> Quilograma ($kg$). <span class="text-sm italic text-amber-700 dark:text-amber-400">Atenção: Grama é masculino ("O" duzentos gramas).</span></li>
+              <li><strong>Tempo:</strong> Segundo ($s$).</li>
+              <li><strong>Temperatura:</strong> Kelvin ($K$).</li>
+              <li><strong>Corrente elétrica:</strong> Ampere ($A$).</li>
+              <li><strong>Quantidade de matéria:</strong> mol ($mol$).</li>
+              <li><strong>Intensidade luminosa:</strong> candela ($cd$).</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">⚡ 2. Prefixos Multiplicadores:</h4>
+            <p class="mb-2">Na ciência, usamos prefixos para não escrever muitos zeros:</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Kilo ($k$):</strong> Multiplica por $1.000$ (Ex: $1\\text{ km} = 1000\\text{ m}$).</li>
+              <li><strong>Centi ($c$):</strong> Divide por $100$ (Ex: $1\\text{ cm} = 0,01\\text{ m}$).</li>
+              <li><strong>Mili ($m$):</strong> Divide por $1.000$ (Ex: $1\\text{ mm} = 0,001\\text{ m}$).</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-blue-850 dark:text-blue-300 mb-2">🔮 Mnemônico da Escala de Comprimento:</h4>
+            <p class="italic mb-2">"<strong>K</strong>omprei <strong>H</strong>oje <strong>D</strong>ois <strong>M</strong>elões <strong>D</strong>oces <strong>C</strong>om <strong>M</strong>el"</p>
+            <p class="text-sm">($\\text{km} \\rightarrow \\text{hm} \\rightarrow \\text{dam} \\rightarrow \\mathbf{m} \\rightarrow \\text{dm} \\rightarrow \\text{cm} \\rightarrow \\text{mm}$)</p>
+            <p class="text-xs mt-1 font-semibold text-blue-700 dark:text-blue-400">Regra: Para a direita, multiplique por 10. Para a esquerda, divida por 10.</p>
+          </div>
+          <div class="mt-4">
+            <h5 class="font-bold mb-2">Links de Consulta:</h5>
+            <div class="flex flex-wrap gap-2">
+              <a href="https://brasilescola.uol.com.br/o-que-e/fisica/o-que-e-grandeza.htm" target="_blank" class="text-amber-600 hover:underline text-sm"><i class="fa-solid fa-link mr-1"></i>O que é grandeza?</a>
+              <a href="https://www.todamateria.com.br/sistema-internacional-de-unidades/" target="_blank" class="text-amber-600 hover:underline text-sm"><i class="fa-solid fa-link mr-1"></i>Sistema Internacional</a>
+            </div>
+          </div>
+        `,
+        questions: [
+          {
+            id: 1,
+            difficulty: "Fácil",
+            text: "Converta $4,5\\text{ km}$ para metros.",
+            options: ["$450\\text{ m}$", "$4.500\\text{ m}$", "$45\\text{ m}$", "$0,45\\text{ m}$"],
+            correct: 1,
+            hint: "Lembre-se do mnemônico: para ir de km para m, andamos 3 casas para a direita, multiplicando por $1000$."
+          },
+          {
+            id: 2,
+            difficulty: "Fácil",
+            text: "Uma garrafa de refrigerante tem $2,5\\text{ Litros}$. Quantos mililitros ($mL$) cabem nela?",
+            options: ["$250\\text{ mL}$", "$25\\text{ mL}$", "$2.500\\text{ mL}$", "$25.000\\text{ mL}$"],
+            correct: 2,
+            hint: "Cada litro possui $1000\\text{ mL}$. Multiplique o volume por $1000$."
+          },
+          {
+            id: 3,
+            difficulty: "Fácil",
+            text: "Uma partida de futebol dura $90$ minutos. Qual é a duração total do jogo em segundos?",
+            options: ["$900\\text{ s}$", "$5.400\\text{ s}$", "$3.600\\text{ s}$", "$2.400\\text{ s}$"],
+            correct: 1,
+            hint: "$1\\text{ minuto} = 60\\text{ segundos}$. Multiplique $90$ por $60$."
+          },
+          {
+            id: 4,
+            difficulty: "Intermediário",
+            text: "Sabendo que $1\\text{ m}^3$ equivale a $1.000\\text{ Litros}$, quantos litros de água cabem em uma piscina retangular de $5\\text{ m}$ de comprimento, $2\\text{ m}$ de largura e $1,5\\text{ m}$ de profundidade?",
+            options: ["$1.500\\text{ L}$", "$15.000\\text{ L}$", "$7.500\\text{ L}$", "$10.000\\text{ L}$"],
+            correct: 1,
+            hint: "Calcule primeiro o volume em metros cúbicos multiplicando Comprimento $\\times$ Largura $\\times$ Profundidade. Depois converta para litros."
+          },
+          {
+            id: 5,
+            difficulty: "Desafio",
+            text: "Se você criar um algoritmo para converter Dias em Segundos ($S = D \\times 24 \\times 60 \\times 60$), quantos segundos existem em um ano não bissexto ($365$ dias)? Escreva o valor em notação científica.",
+            options: ["$3,1536 \\times 10^7\\text{ s}$", "$3,15 \\times 10^6\\text{ s}$", "$31,536 \\times 10^6\\text{ s}$", "$3,1536 \\times 10^8\\text{ s}$"],
+            correct: 0,
+            hint: "Multiplique $365 \\times 24 \\times 60 \\times 60$ para obter o valor total. Em seguida, desloque a vírgula para a esquerda até restar apenas um algarismo antes dela."
+          }
+        ],
+        gabarito: `
+          <h4 class="font-bold text-lg mb-3 text-amber-800 dark:text-amber-400">Gabarito Passo a Passo - Aula 1:</h4>
+          <div class="space-y-4 text-sm text-stone-700 dark:text-stone-300">
+            <p><strong>Exercício 1:</strong> Para converter de quilômetros ($km$) para metros ($m$), multiplicamos por $1.000$.<br>
+            $$4,5 \\times 1.000 = 4.500\\text{ m}$$</p>
+            <p><strong>Exercício 2:</strong> Sabendo que $1\\text{ L} = 1.000\\text{ mL}$, multiplicamos o volume por $1.000$.<br>
+            $$2,5 \\times 1.000 = 2.500\\text{ mL}$$</p>
+            <p><strong>Exercício 3:</strong> Cada minuto possui $60$ segundos. Logo, multiplicamos a quantidade de minutos por $60$.<br>
+            $$90 \\times 60 = 5.400\\text{ segundos}$$</p>
+            <p><strong>Exercício 4:</strong> O volume da piscina retangular é dado por:<br>
+            $$V = \\text{comprimento} \\times \\text{largura} \\times \\text{profundidade}$$
+            $$V = 5\\text{ m} \\times 2\\text{ m} \\times 1,5\\text{ m} = 15\\text{ m}^3$$
+            Como cada $1\\text{ m}^3 = 1.000\\text{ litros}$, temos:<br>
+            $$15 \\times 1.000 = 15.000\\text{ litros}$$</p>
+            <p><strong>Exercício 5:</strong> Calculamos a quantidade total de segundos em $365$ dias:<br>
+            $$S = 365 \\times 24 \\times 60 \\times 60 = 31.536.000\\text{ s}$$
+            Passando para notação científica, movemos a vírgula 7 casas decimais para a esquerda:<br>
+            $$3,1536 \\times 10^7\\text{ s}$$</p>
+          </div>
+        `
+      },
+      {
+        id: 2,
+        title: "Variação de Grandezas e Porcentagens",
+        boss: { name: "A Esfinge das Proporções", maxHp: 120, hp: 120, img: "🦁" },
+        bimestre: "1º Bimestre",
+        teoria: `
+          <p class="mb-4">Muitas vezes, uma grandeza depende da outra. Quando dividimos uma grandeza por outra, criamos uma <strong>Taxa</strong> ou <strong>Índice</strong>.</p>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">🏎️ 1. Grandezas Compostas (Razões Especiais):</h4>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Velocidade Média ($V_m$):</strong> Distância dividida pelo Tempo ($km/h$ ou $m/s$).</li>
+              <li><strong>Densidade ($d$):</strong> Massa dividida pelo Volume ($g/cm^3$). Mostra o quão "compacta" é a matéria.</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">📈 2. Porcentagem (%):</h4>
+            <p class="mb-2">Porcentagem é simplesmente uma fração com denominador 100.</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>$20\% = \\frac{20}{100} = 0,20$.</li>
+              <li><strong>Fator de Aumento:</strong> Para aumentar um valor em $15\%$, multiplique-o por $1,15$.</li>
+              <li><strong>Fator de Desconto:</strong> Para dar um desconto de $20\%$, multiplique o valor por $0,80$ (pois $100\% - 20\% = 80\%$).</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-blue-850 dark:text-blue-300 mb-2">🔮 Dica de Mestre: Conversão de Velocidade</h4>
+            <p class="mb-1">Para converter $km/h$ para $m/s$, <strong>divida por $3,6$</strong>. Para fazer o caminho inverso, <strong>multiplique por $3,6$</strong>.</p>
+            <p class="text-xs">Na calculadora, para obter rapidamente $18\%$ de $250$: digite <code class="bg-stone-200 dark:bg-stone-800 px-1 py-0.5 rounded">250 * 0.18</code>.</p>
+          </div>
+        `,
+        questions: [
+          {
+            id: 1,
+            difficulty: "Fácil",
+            text: "Um carro viaja $240\\text{ km}$ em $3$ horas. Qual a sua velocidade média?",
+            options: ["$60\\text{ km/h}$", "$70\\text{ km/h}$", "$80\\text{ km/h}$", "$90\\text{ km/h}$"],
+            correct: 2,
+            hint: "Divida a distância total percorrida pelo tempo gasto: $V_m = \\frac{d}{t}$."
+          },
+          {
+            id: 2,
+            difficulty: "Fácil",
+            text: "Um bloco de ferro tem massa de $780\\text{ g}$ e volume de $100\\text{ cm}^3$. Qual a sua densidade?",
+            options: ["$7,8\\text{ g/cm}^3$", "$0,78\\text{ g/cm}^3$", "$78\\text{ g/cm}^3$", "$780\\text{ g/cm}^3$"],
+            correct: 0,
+            hint: "A densidade é a massa dividida pelo volume: $d = \\frac{m}{V}$."
+          },
+          {
+            id: 3,
+            difficulty: "Fácil",
+            text: "Uma armadura custava $150\\text{ moedas de ouro}$ e sofreu um aumento de $10\\%$. Qual o novo preço?",
+            options: ["$160\\text{ moedas}$", "$165\\text{ moedas}$", "$155\\text{ moedas}$", "$170\\text{ moedas}$"],
+            correct: 1,
+            hint: "Multiplique o preço original por $1,10$ (fator de aumento de $10\\%$)."
+          },
+          {
+            id: 4,
+            difficulty: "Intermediário",
+            text: "Um cavaleiro corre a uma velocidade constante de $72\\text{ km/h}$. Se ele se distrair por $1$ único segundo, quantos metros ele percorrerá nesse intervalo?",
+            options: ["$72\\text{ m}$", "$20\\text{ m}$", "$10\\text{ m}$", "$36\\text{ m}$"],
+            correct: 1,
+            hint: "Primeiro converta a velocidade de $km/h$ para $m/s$ dividindo por $3,6$. O resultado indica quantos metros ele percorre por segundo."
+          },
+          {
+            id: 5,
+            difficulty: "Desafio",
+            text: "Um escudo mágico sofreu um aumento de $20\\%$ e, no mês seguinte, uma promoção deu um desconto de $20\\%$ sobre o novo preço. O preço final é igual ao inicial? Justifique com fatores multiplicativos.",
+            options: ["Sim, pois o aumento e o desconto se anulam.", "Não, o preço final é $4\\%$ menor que o inicial.", "Não, o preço final é $4\\%$ maior que o inicial.", "Não, o preço final é $2\\%$ menor que o inicial."],
+            correct: 1,
+            hint: "Multiplique o fator de aumento ($1,20$) pelo fator de desconto ($0,80$)."
+          }
+        ],
+        gabarito: `
+          <h4 class="font-bold text-lg mb-3 text-amber-800 dark:text-amber-400">Gabarito Passo a Passo - Aula 2:</h4>
+          <div class="space-y-4 text-sm text-stone-700 dark:text-stone-300">
+            <p><strong>Exercício 1:</strong> Velocidade média é dada por $V_m = \\frac{\\text{distância}}{\\text{tempo}}$.<br>
+            $$V_m = \\frac{240\\text{ km}}{3\\text{ h}} = 80\\text{ km/h}$$</p>
+            <p><strong>Exercício 2:</strong> Densidade é dada por $d = \\frac{\\text{massa}}{\\text{volume}}$.<br>
+            $$d = \\frac{780\\text{ g}}{100\\text{ cm}^3} = 7,8\\text{ g/cm}^3$$</p>
+            <p><strong>Exercício 3:</strong> Para aumentar um valor em $10\\%$, multiplicamos pelo fator $1,10$.<br>
+            $$\\text{Preço final} = 150 \\times 1,10 = 165\\text{ moedas}$$</p>
+            <p><strong>Exercício 4:</strong> Primeiro convertemos $72\\text{ km/h}$ para $m/s$ dividindo por $3,6$:<br>
+            $$\\frac{72}{3,6} = 20\\text{ m/s}$$
+            Em 1 segundo de distração, o cavaleiro percorre exatamente $20\\text{ metros}$.</p>
+            <p><strong>Exercício 5:</strong> Fator de aumento de $20\\% = 1,20$. Fator de desconto de $20\\% = 0,80$.<br>
+            Multiplicando os fatores acumulados:<br>
+            $$1,20 \\times 0,80 = 0,96$$
+            O valor final corresponde a $96\\%$ do inicial. Logo, houve uma redução líquida de $4\\%$.</p>
+          </div>
+        `
+      },
+      {
+        id: 3,
+        title: "Linguagem Algébrica e Generalização",
+        boss: { name: "O Arquivista das Letras", maxHp: 140, hp: 140, img: "🧙‍♂️" },
+        bimestre: "1º Bimestre",
+        teoria: `
+          <p class="mb-4">A Álgebra é a arte de descobrir o desconhecido. Usamos letras (variáveis) para representar números que podem mudar ou que ainda não conhecemos. Isso é a base de toda a programação de computadores!</p>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">📜 1. Traduzindo do Português para o "Matematiquês":</h4>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>"Um número qualquer" $\\rightarrow x$</li>
+              <li>"O dobro de um número" $\\rightarrow 2x$</li>
+              <li>"O quadrado de um número mais cinco" $\\rightarrow x^2 + 5$</li>
+              <li>"A metade da diferença entre dois números" $\\rightarrow \\frac{x - y}{2}$</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">⚖️ 2. Proporcionalidade (Regra de Três):</h4>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Direta:</strong> Se compro mais poções, gasto mais ouro. (Multiplica em cruz: $\\frac{a}{b} = \\frac{c}{x}$).</li>
+              <li><strong>Inversa:</strong> Se aumento a velocidade de escavação dos gnomos, o tempo diminui. (Multiplica em linha reta: $a \\cdot b = c \\cdot x$).</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-blue-850 dark:text-blue-300 mb-2">🔮 Pensamento Computacional:</h4>
+            <p class="text-sm">Sempre que você cria uma fórmula generalizada, como uma planilha onde insere valores em células mutáveis, você está utilizando a lógica e as variáveis da Álgebra!</p>
+          </div>
+        `,
+        questions: [
+          {
+            id: 1,
+            difficulty: "Fácil",
+            text: "Escreva a expressão algébrica para: 'O triplo de um número subtraído de 10'.",
+            options: ["$3x - 10$", "$10 - 3x$", "$3(x - 10)$", "$x^3 - 10$"],
+            correct: 0,
+            hint: "O triplo de um número é $3x$. Subtraído de $10$ significa retirar $10$ dele."
+          },
+          {
+            id: 2,
+            difficulty: "Fácil",
+            text: "Se 4 pergaminhos mágicos custam $60\\text{ moedas}$, quanto custarão $7$ pergaminhos idênticos?",
+            options: ["$100\\text{ moedas}$", "$105\\text{ moedas}$", "$110\\text{ moedas}$", "$95\\text{ moedas}$"],
+            correct: 1,
+            hint: "Esta é uma proporção direta. Divida $60$ por $4$ para achar o preço unitário e depois multiplique por $7$."
+          },
+          {
+            id: 3,
+            difficulty: "Fácil",
+            text: "Se 3 ferreiros constroem uma catapulta em $10\\text{ dias}$, quantos dias $6\\text{ ferreiros}$ levariam?",
+            options: ["$20\\text{ dias}$", "$5\\text{ dias}$", "$15\\text{ dias}$", "$7,5\\text{ dias}$"],
+            correct: 1,
+            hint: "Proporção inversa! Se você dobra o número de trabalhadores ($3 \\rightarrow 6$), o tempo necessário deve cair pela metade."
+          },
+          {
+            id: 4,
+            difficulty: "Intermediário",
+            text: "A fórmula do Índice de Massa Corporal (IMC) é dada por $IMC = \\frac{\\text{Massa}}{\\text{Altura}^2}$. Calcule o IMC de um guerreiro que pesa $80\\text{ kg}$ e tem $2,00\\text{ m}$ de altura.",
+            options: ["$20$", "$25$", "$40$", "$18$"],
+            correct: 0,
+            hint: "Substitua a massa por $80$ e a altura por $2,00$. Calcule primeiro o quadrado da altura."
+          },
+          {
+            id: 5,
+            difficulty: "Desafio",
+            text: "Em um estábulo há cavalos ($c$, 4 patas) e cavaleiros ($p$, 2 pernas). O total de seres é $20$ e o total de patas/pernas é $64$. Monte o sistema de equações e descubra quantos cavalos há no local.",
+            options: ["$10\\text{ cavalos}$", "$12\\text{ cavalos}$", "$8\\text{ cavalos}$", "$14\\text{ cavalos}$"],
+            correct: 1,
+            hint: "As equações são: $c + p = 20$ e $4c + 2p = 64$. Use o método da substituição ou da adição para encontrar $c$."
+          }
+        ],
+        gabarito: `
+          <h4 class="font-bold text-lg mb-3 text-amber-800 dark:text-amber-400">Gabarito Passo a Passo - Aula 3:</h4>
+          <div class="space-y-4 text-sm text-stone-700 dark:text-stone-300">
+            <p><strong>Exercício 1:</strong> 'O triplo de um número' representa $3x$. 'Subtraído de 10' significa subtrair 10 desse termo. Portanto, a expressão é:<br>
+            $$3x - 10$$</p>
+            <p><strong>Exercício 2:</strong> Regra de três simples direta:<br>
+            $$\\frac{4}{60} = \\frac{7}{x} \\implies 4x = 420 \\implies x = 105\\text{ moedas}$$</p>
+            <p><strong>Exercício 3:</strong> Regra de três simples inversa. Dobrar a força de trabalho reduz o tempo à metade:<br>
+            $$3 \\times 10 = 6 \\times t \\implies 30 = 6t \\implies t = 5\\text{ dias}$$</p>
+            <p><strong>Exercício 4:</strong> Aplicando os valores na fórmula de IMC:<br>
+            $$IMC = \\frac{80}{2^2} = \\frac{80}{4} = 20$$</p>
+            <p><strong>Exercício 5:</strong> Sistema de equações:<br>
+            $$\\begin{cases} c + p = 20 \\\\ 4c + 2p = 64 \\end{cases}$$
+            Multiplicando a primeira equação por $-2$:<br>
+            $$-2c - 2p = -40$$
+            Somando-a com a segunda equação:<br>
+            $$2c = 24 \\implies c = 12\\text{ cavalos}$$</p>
+          </div>
+        `
+      },
+      {
+        id: 4,
+        title: "Funções do 1º Grau (Definição e Gráficos)",
+        boss: { name: "O Cartógrafo das Linhas", maxHp: 150, hp: 150, img: "📐" },
+        bimestre: "2º Bimestre",
+        teoria: `
+          <p class="mb-4">Uma função é como uma "máquina" de transformar números. Você insere um valor de entrada ($x$), a máquina processa a regra algébrica, e devolve uma saída ($y$ ou $f(x)$).</p>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">📈 1. A Estrutura da Função Afim:</h4>
+            <p class="mb-2">Toda função do 1º grau tem a cara: <strong class="text-amber-700 dark:text-amber-400">$f(x) = ax + b$</strong></p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>$a$ (Coeficiente Angular / Taxa de Variação):</strong> É o "motor" da função. Define se ela cresce ($a > 0$) ou decresce ($a < 0$).</li>
+              <li><strong>$b$ (Coeficiente Linear / Valor Fixo):</strong> É onde o gráfico corta o eixo vertical ($Y$). É o valor inicial quando $x = 0$.</li>
+            </ul>
+          </div>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">⚖️ 2. Casos Particulares:</h4>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Função Linear:</strong> O $b$ é zero ($f(x) = ax$). O gráfico passa exatamente na origem $(0,0)$.</li>
+              <li><strong>Função Constante:</strong> O $a$ é zero ($f(x) = b$). O gráfico é uma linha reta horizontal.</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-blue-850 dark:text-blue-300 mb-2">🔮 Dica de Ouro para o Gráfico Perfeito:</h4>
+            <p class="text-sm">O gráfico de uma função do 1º grau é sempre uma <strong>reta</strong>. Para desenhar uma reta, você precisa de apenas <strong>2 pontos</strong>:</p>
+            <ol class="list-decimal pl-5 text-xs mt-1 space-y-0.5">
+              <li>O ponto onde corta o eixo Y (que é o valor de $b$).</li>
+              <li>A raiz da função (iguale a equação a zero e encontre $x$).</li>
+            </ol>
+          </div>
+        `,
+        questions: [
+          {
+            id: 1,
+            difficulty: "Fácil",
+            text: "Na função $f(x) = 3x - 5$, identifique quem é a taxa de variação ($a$) e o valor fixo ($b$).",
+            options: ["$a = 3$ e $b = -5$", "$a = -5$ e $b = 3$", "$a = 3$ e $b = 5$", "$a = 1$ e $b = -5$"],
+            correct: 0,
+            hint: "O coeficiente $a$ acompanha o $x$, e o coeficiente $b$ é o termo constante isolado."
+          },
+          {
+            id: 2,
+            difficulty: "Fácil",
+            text: "A função $f(x) = -2x + 10$ é crescente ou decrescente? Por quê?",
+            options: ["Crescente, pois o valor $10$ é positivo.", "Decrescente, pois o coeficiente angular ($a = -2$) é negativo.", "Constante, pois ela possui uma reta plana.", "Crescente, pois corta o eixo Y no 10."],
+            correct: 1,
+            hint: "O comportamento crescente ou decrescente é determinado unicamente pelo sinal de $a$."
+          },
+          {
+            id: 3,
+            difficulty: "Fácil",
+            text: "Calcule o valor de $f(4)$ para a função $f(x) = 2x + 1$.",
+            options: ["$8$", "$9$", "$7$", "$10$"],
+            correct: 1,
+            hint: "Substitua a variável $x$ pelo número $4$ e resolva as operações de multiplicação e soma."
+          },
+          {
+            id: 4,
+            difficulty: "Intermediário",
+            text: "O salário de um alquimista é composto por uma taxa fixa de $1.500\\text{ moedas}$ mais uma comissão de $50\\text{ moedas}$ por poção produzida ($x$). Escreva a função $S(x)$ e calcule o ganho ao produzir $20$ poções.",
+            options: ["$2.500\\text{ moedas}$", "$2.000\\text{ moedas}$", "$1.600\\text{ moedas}$", "$3.000\\text{ moedas}$"],
+            correct: 0,
+            hint: "A estrutura é $S(x) = 50x + 1500$. Substitua $x$ por $20$."
+          },
+          {
+            id: 5,
+            difficulty: "Desafio",
+            text: "Encontre a raiz da função $f(x) = 4x - 12$ (ou seja, o valor de $x$ quando $f(x) = 0$).",
+            options: ["$x = 3$", "$x = -3$", "$x = 12$", "$x = 4$"],
+            correct: 0,
+            hint: "Iguale a função a zero: $4x - 12 = 0$. Isole $x$ para encontrar a resposta."
+          }
+        ],
+        gabarito: `
+          <h4 class="font-bold text-lg mb-3 text-amber-800 dark:text-amber-400">Gabarito Passo a Passo - Aula 4:</h4>
+          <div class="space-y-4 text-sm text-stone-700 dark:text-stone-300">
+            <p><strong>Exercício 1:</strong> Na equação padrão $f(x) = ax + b$, comparando com $f(x) = 3x - 5$, temos:<br>
+            $$a = 3 \\quad \\text{e} \\quad b = -5$$</p>
+            <p><strong>Exercício 2:</strong> Como o coeficiente angular $a = -2$ é menor que zero ($a < 0$), a função é classificada como **decrescente**.</p>
+            <p><strong>Exercício 3:</strong> Substituindo $x = 4$ na função:<br>
+            $$f(4) = 2(4) + 1 = 8 + 1 = 9$$</p>
+            <p><strong>Exercício 4:</strong> A lei da função é $S(x) = 50x + 1500$. Para $x = 20$ poções:<br>
+            $$S(20) = 50(20) + 1.500 = 1.000 + 1.500 = 2.500\\text{ moedas}$$</p>
+            <p><strong>Exercício 5:</strong> Para achar a raiz, definimos $f(x) = 0$:<br>
+            $$4x - 12 = 0 \\implies 4x = 12 \\implies x = 3$$</p>
+          </div>
+        `
+      },
+      {
+        id: 5,
+        title: "Ladrilhamento e Padrões Geométricos",
+        boss: { name: "O Construtor de Runas", maxHp: 160, hp: 160, img: "🧱" },
+        bimestre: "2º Bimestre",
+        teoria: `
+          <p class="mb-4">Ladrilhar o plano significa cobrir o chão com pisos sem deixar buracos e sem sobrepor as peças. Para que isso aconteça, a matemática dos ângulos precisa ser exata.</p>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">📐 1. A Regra dos $360^\\circ$:</h4>
+            <p>Para que polígonos se encaixem perfeitamente em um vértice (ponta), a soma dos ângulos internos que se encontram ali deve ser exatamente <strong class="text-amber-700 dark:text-amber-400">$360^\\circ$</strong>.</p>
+          </div>
+          <div class="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-amber-850 dark:text-amber-300 mb-2">💎 2. Polígonos Regulares que Ladrilham Sozinhos:</h4>
+            <p class="mb-2">Apenas três polígonos regulares conseguem cobrir o plano sozinhos:</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>Triângulo Equilátero:</strong> Ângulo interno = $60^\\circ$. ($6 \\times 60^\\circ = 360^\\circ$).</li>
+              <li><strong>Quadrado:</strong> Ângulo interno = $90^\\circ$. ($4 \\times 90^\\circ = 360^\\circ$).</li>
+              <li><strong>Hexágono Regular:</strong> Ângulo interno = $120^\\circ$. ($3 \\times 120^\\circ = 360^\\circ$).</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 dark:bg-blue-950/30 border-l-4 border-blue-500 p-4 mb-4 rounded-r shadow-sm">
+            <h4 class="font-bold text-blue-850 dark:text-blue-300 mb-2">🔮 Fórmula do Ângulo Interno ($A_i$):</h4>
+            <p class="text-sm">Para descobrir o ângulo interno de qualquer polígono regular com $n$ lados, use:</p>
+            <p class="text-center font-bold my-2">$$ A_i = \\frac{(n - 2) \\cdot 180^\\circ}{n} $$</p>
+          </div>
+        `,
+        questions: [
+          {
+            id: 1,
+            difficulty: "Fácil",
+            text: "Qual é a soma dos ângulos ao redor de um único ponto (vértice) em um piso bem colocado?",
+            options: ["$180^\\circ$", "$360^\\circ$", "$90^\\circ$", "$540^\\circ$"],
+            correct: 1,
+            hint: "Para fechar uma volta completa em torno de um vértice sem sobrepor as peças, precisamos de uma volta inteira de circunferência."
+          },
+          {
+            id: 2,
+            difficulty: "Fácil",
+            text: "Usando a fórmula do $A_i$, calcule o ângulo interno de um Pentágono Regular ($n=5$).",
+            options: ["$120^\\circ$", "$108^\\circ$", "$90^\\circ$", "$135^\\circ$"],
+            correct: 1,
+            hint: "Substitua $n$ por $5$ na fórmula: $A_i = \\frac{(5-2) \\cdot 180^\\circ}{5}$."
+          },
+          {
+            id: 3,
+            difficulty: "Fácil",
+            text: "Com base no exercício anterior, é possível ladrilhar um chão apenas com pentágonos regulares sem deixar buracos?",
+            options: ["Sim, pois seu ângulo interno é divisor de $360^\\circ$.", "Não, pois seu ângulo interno ($108^\\circ$) não divide exatamente $360^\\circ$.", "Sim, pentágonos sempre ladrilham o plano.", "Não, pois o pentágono não possui ângulos iguais."],
+            correct: 1,
+            hint: "Divida $360$ por $108$. Se o resultado não for um número inteiro, restará um espaço aberto."
+          },
+          {
+            id: 4,
+            difficulty: "Intermediário",
+            text: "Um arquiteto quer criar um mosaico juntando, em um mesmo vértice, 2 quadrados e 1 polígono desconhecido. Sabendo que o quadrado tem ângulo de $90^\\circ$, qual deve ser o ângulo interno do polígono desconhecido?",
+            options: ["$120^\\circ$", "$180^\\circ$", "$90^\\circ$", "$135^\\circ$"],
+            correct: 1,
+            hint: "Some os ângulos dos quadrados ($90^\\circ + 90^\\circ$) e veja quanto falta para completar $360^\\circ$."
+          },
+          {
+            id: 5,
+            difficulty: "Desafio",
+            text: "Um octógono regular tem ângulo interno de $135^\\circ$. Se você colocar dois octógonos regulares lado a lado no plano, qual polígono regular se encaixa exatamente no buraco restante?",
+            options: ["Triângulo Equilátero", "Quadrado", "Hexágono Regular", "Pentágono Regular"],
+            correct: 1,
+            hint: "Os dois octógonos somam $270^\\circ$ ($135^\\circ + 135^\\circ$). Subtraia esse valor de $360^\\circ$ e verifique qual polígono tem esse ângulo interno."
+          }
+        ],
+        gabarito: `
+          <h4 class="font-bold text-lg mb-3 text-amber-800 dark:text-amber-400">Gabarito Passo a Passo - Aula 5:</h4>
+          <div class="space-y-4 text-sm text-stone-700 dark:text-stone-300">
+            <p><strong>Exercício 1:</strong> A soma dos ângulos que se encontram em um vértice de ladrilhamento perfeito deve ser sempre:<br>
+            $$360^\\circ$$</p>
+            <p><strong>Exercício 2:</strong> Substituindo $n = 5$ na fórmula:<br>
+            $$A_i = \\frac{(5-2) \\cdot 180^\\circ}{5} = \\frac{3 \\cdot 180^\\circ}{5} = \\frac{540^\\circ}{5} = 108^\\circ$$</p>
+            <p><strong>Exercício 3:</strong> Não é possível. Se tentarmos juntar pentágonos regulares, temos:<br>
+            $$3 \\times 108^\\circ = 324^\\circ \\quad (\\text{sobra um buraco de } 36^\\circ)$$
+            $$4 \\times 108^\\circ = 432^\\circ \\quad (\\text{sobrepõe os blocos})$$
+            Como $108$ não divide $360$ em partes inteiras, o ladrilhamento falha.</p>
+            <p><strong>Exercício 4:</strong> Dois quadrados contribuem com $90^\\circ + 90^\\circ = 180^\\circ$.<br>
+            Para fechar $360^\\circ$ no vértice, o polígono desconhecido precisa preencher a diferença:<br>
+            $$360^\\circ - 180^\\circ = 180^\\circ$$</p>
+            <p><strong>Exercício 5:</strong> Dois octógonos regulares adjacentes somam $135^\\circ + 135^\\circ = 270^\\circ$ no vértice comum.<br>
+            O espaço que resta para completar os $360^\\circ$ é:<br>
+            $$360^\\circ - 270^\\circ = 90^\\circ$$
+            O polígono regular cujo ângulo interno mede $90^\\circ$ é o **Quadrado**.</p>
+          </div>
+        `
+      }
+    ];
+
+    // ESTADO DA APLICAÇÃO (GAME STATE)
+    let hero = {
+      name: "",
+      class: "Warrior",
+      hp: 100,
+      maxHp: 100,
+      xp: 0,
+      nextLevelXp: 100,
+      level: 1,
+      gold: 0,
+      xpMultiplier: 1.0,
+      goldMultiplier: 1.0
+    };
+
+    let activeQuestIndex = 0;
+    let activeTab = "teoria";
+    let questStates = []; // Registra se visto obtido, se boss morto, etc.
+    let currentQuestionIndex = 0;
+    let activeQuickMathAnswer = 0;
+
+    // INICIALIZAÇÃO DA AVENTURA
+    function initAdventure() {
+      const nameInput = document.getElementById("hero-name").value.trim();
+      if (!nameInput) {
+        alert("Escreva um nome válido para seu herói!");
+        return;
+      }
+      
+      hero.name = nameInput;
+      const selectedClass = document.querySelector('input[name="hero-class"]:checked').value;
+      hero.class = selectedClass;
+
+      // Configuração inicial por Arquétipo
+      if (selectedClass === "Warrior") {
+        hero.maxHp = 150;
+        hero.hp = 150;
+        hero.xpMultiplier = 1.0;
+        hero.goldMultiplier = 1.0;
+        document.getElementById("hero-avatar-display").innerText = "🛡️";
+        document.getElementById("hero-class-display").innerText = "Guerreiro da Aritmética";
+      } else if (selectedClass === "Mage") {
+        hero.maxHp = 100;
+        hero.hp = 100;
+        hero.xpMultiplier = 1.5; // Multiplicador de estudo
+        hero.goldMultiplier = 1.0;
+        document.getElementById("hero-avatar-display").innerText = "🧙‍♂️";
+        document.getElementById("hero-class-display").innerText = "Mago das Funções";
+      } else if (selectedClass === "Rogue") {
+        hero.maxHp = 110;
+        hero.hp = 110;
+        hero.xpMultiplier = 1.1;
+        hero.goldMultiplier = 1.5; // Multiplicador de pilhagem/ouro
+        document.getElementById("hero-avatar-display").innerText = "🗡️";
+        document.getElementById("hero-class-display").innerText = "Ladino dos Algoritmos";
+      }
+
+      // Inicializa estados das missões
+      questStates = classesData.map(c => ({
+        id: c.id,
+        visto: false,
+        bossHp: c.boss.maxHp,
+        completed: false,
+        currentQuestion: 0
+      }));
+
+      // Esconde login, exibe app
+      document.getElementById("login-screen").classList.add("hidden");
+      document.getElementById("app-screen").classList.remove("hidden");
+
+      updateHeaderStatus();
+      renderQuestMap();
+      loadQuest(0);
+    }
+
+    // ATUALIZAR STATUS NO TOPO DO APP
+    function updateHeaderStatus() {
+      document.getElementById("hero-name-display").innerText = hero.name;
+      document.getElementById("hero-level").innerText = hero.level;
+      document.getElementById("hero-gold").innerText = Math.round(hero.gold);
+      
+      // HP Bar
+      document.getElementById("hp-text").innerText = `${hero.hp}/${hero.maxHp}`;
+      const hpPercentage = Math.max(0, (hero.hp / hero.maxHp) * 100);
+      document.getElementById("hp-bar").style.width = `${hpPercentage}%`;
+
+      // XP Bar
+      document.getElementById("xp-text").innerText = `${hero.xp}/${hero.nextLevelXp}`;
+      const xpPercentage = Math.min(100, (hero.xp / hero.nextLevelXp) * 100);
+      document.getElementById("xp-bar").style.width = `${xpPercentage}%`;
+    }
+
+    // CONSTRUIR LISTA LATERAL DE MISSÕES (QUESTS)
+    function renderQuestMap() {
+      const container = document.getElementById("quest-list");
+      container.innerHTML = "";
+
+      classesData.forEach((quest, idx) => {
+        const state = questStates[idx];
+        let statusIcon = "🔒";
+        let colorClass = "opacity-50 pointer-events-none";
+
+        // Se for a primeira missão, ou se a anterior estiver completa, ela é destravada
+        if (idx === 0 || questStates[idx - 1].completed) {
+          colorClass = "border-amber-200 hover:bg-amber-50/50 dark:hover:bg-stone-900";
+          statusIcon = "🛡️";
+          if (state.completed) {
+            statusIcon = "✅";
+            colorClass = "border-green-300 bg-green-50/20 dark:bg-green-950/10";
+          } else if (idx === activeQuestIndex) {
+            colorClass = "border-medieval-gold bg-amber-100/30 dark:bg-amber-950/20 shadow-sm";
+            statusIcon = "⚔️";
+          }
+        }
+
+        const btn = document.createElement("button");
+        btn.className = `w-full text-left p-3 rounded-lg border flex items-center justify-between transition text-xs font-bold ${colorClass}`;
+        btn.onclick = () => loadQuest(idx);
+        btn.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="text-base">${statusIcon}</span>
+            <div>
+              <span class="text-[10px] text-stone-500 block">Quest ${quest.id}</span>
+              <span class="text-stone-800 dark:text-stone-200 leading-tight block">${quest.title}</span>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-stone-400 text-[10px]"></i>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    // CARREGAR UMA MISSÃO ESPECÍFICA
+    function loadQuest(index) {
+      activeQuestIndex = index;
+      const quest = classesData[index];
+      const state = questStates[index];
+
+      // Atualiza aba e botões
+      switchTab("teoria");
+
+      // Preenche textos da aula
+      document.getElementById("quest-bimestre").innerText = quest.bimestre;
+      document.getElementById("quest-title").innerText = quest.title;
+      document.getElementById("quest-content").innerHTML = quest.teoria;
+
+      // Área do Visto
+      const vistoArea = document.getElementById("visto-action-area");
+      if (state.visto) {
+        vistoArea.innerHTML = `
+          <div class="text-green-600 dark:text-green-400 font-bold text-sm flex items-center gap-1.5 justify-center">
+            <i class="fa-solid fa-circle-check"></i> Visto do Mestre Garantido! Arena de combate desbloqueada.
+          </div>
+        `;
+      } else {
+        vistoArea.innerHTML = `
+          <button onclick="requestVisto()" class="w-full bg-medieval-amber hover:bg-amber-800 text-white font-bold py-2.5 px-6 rounded text-sm transition shadow">
+            <i class="fa-solid fa-pen-nib mr-1"></i> Solicitar Visto do Mestre
+          </button>
+        `;
+      }
+
+      // Configurar Arena de Combate
+      if (!state.visto) {
+        document.getElementById("combate-bloqueado").classList.remove("hidden");
+        document.getElementById("combate-ativo").classList.add("hidden");
+        document.getElementById("combate-concluido").classList.add("hidden");
+      } else if (state.completed) {
+        document.getElementById("combate-bloqueado").classList.add("hidden");
+        document.getElementById("combate-ativo").classList.add("hidden");
+        document.getElementById("combate-concluido").classList.remove("hidden");
+      } else {
+        document.getElementById("combate-bloqueado").classList.add("hidden");
+        document.getElementById("combate-ativo").classList.remove("hidden");
+        document.getElementById("combate-concluido").classList.add("hidden");
+        
+        // Setup do Boss
+        document.getElementById("boss-name").innerText = quest.boss.name;
+        document.getElementById("boss-sprite").firstChild.textContent = quest.boss.img;
+        updateBossHpBar();
+        loadQuestion(state.currentQuestion);
+      }
+
+      // Configurar Gabarito
+      if (state.completed) {
+        document.getElementById("resolucao-bloqueada").classList.add("hidden");
+        document.getElementById("resolucao-ativa").classList.remove("hidden");
+        document.getElementById("resolucao-ativa").innerHTML = quest.gabarito;
+      } else {
+        document.getElementById("resolucao-bloqueada").classList.remove("hidden");
+        document.getElementById("resolucao-ativa").classList.add("hidden");
+      }
+
+      // Atualiza o mapa de classes e as fórmulas matemáticas via KaTeX
+      renderQuestMap();
+      triggerKaTeX();
+    }
+
+    // TRANSIÇÃO DE ABAS
+    function switchTab(tab) {
+      activeTab = tab;
+      
+      const tabTeoria = document.getElementById("tab-teoria");
+      const tabCombate = document.getElementById("tab-combate");
+      const tabResolucao = document.getElementById("tab-resolucao");
+
+      const btnTeoria = document.getElementById("tab-btn-teoria");
+      const btnCombate = document.getElementById("tab-btn-combate");
+      const btnResolucao = document.getElementById("tab-btn-resolucao");
+
+      // Esconder todos
+      tabTeoria.classList.add("hidden");
+      tabCombate.classList.add("hidden");
+      tabResolucao.classList.add("hidden");
+
+      btnTeoria.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg";
+      btnCombate.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg";
+      btnResolucao.className = "px-4 py-2 font-bold text-sm opacity-60 hover:opacity-100 transition border-t border-x border-transparent rounded-t-lg";
+
+      const activeBtnClass = "px-4 py-2 font-bold text-sm bg-stone-200 dark:bg-stone-900 border-t border-x border-stone-300 dark:border-stone-800 rounded-t-lg text-medieval-amber dark:text-medieval-gold";
+
+      if (tab === "teoria") {
+        tabTeoria.classList.remove("hidden");
+        btnTeoria.className = activeBtnClass;
+      } else if (tab === "combate") {
+        tabCombate.classList.remove("hidden");
+        btnCombate.className = activeBtnClass;
+      } else if (tab === "resolucao") {
+        tabResolucao.classList.remove("hidden");
+        btnResolucao.className = activeBtnClass;
+      }
+
+      triggerKaTeX();
+    }
+
+    // REQUISITAR VISTO DO CADERNO (CHAMAR MODAL)
+    function requestVisto() {
+      openModal("modal-visto");
+    }
+
+    // VALIDAR CÓDIGO DO PROFESSOR (VISTO)
+    function submitProfessorCode() {
+      const code = document.getElementById("professor-code").value.trim().toUpperCase();
+      if (code === "MATHGARD" || code === "ETEC2026") {
+        guaranteeVisto();
+        closeModal("modal-visto");
+      } else {
+        alert("Runas de assinatura incorretas! Tente novamente ou use a declaração de honra.");
+      }
+    }
+
+    // AUTO-ASSINATURA DE HONRA
+    function signHonra() {
+      if (confirm("Você promete de fato que copiou os conceitos-chave no seu caderno físico? O conhecimento é seu escudo real.")) {
+        guaranteeVisto();
+        closeModal("modal-visto");
+      }
+    }
+
+    // CONCEDER VISTO AO ALUNO
+    function guaranteeVisto() {
+      const state = questStates[activeQuestIndex];
+      state.visto = true;
+      
+      // Concede recompensa por registrar teoria
+      gainXp(15);
+      gainGold(5);
+
+      // Recarrega quest ativa para aplicar mudanças de visualização
+      loadQuest(activeQuestIndex);
+    }
+
+    // CARREGAR QUESTÃO NA ARENA DE COMBATE
+    function loadQuestion(qIndex) {
+      const quest = classesData[activeQuestIndex];
+      const state = questStates[activeQuestIndex];
+      state.currentQuestion = qIndex;
+      currentQuestionIndex = qIndex;
+
+      const question = quest.questions[qIndex];
+      document.getElementById("current-question-num").innerText = qIndex + 1;
+      document.getElementById("current-question-difficulty").innerText = question.difficulty;
+      document.getElementById("question-text").innerHTML = question.text;
+
+      // Reset Dica
+      document.getElementById("hint-display").classList.add("hidden");
+
+      // Gerar opções
+      const optionsContainer = document.getElementById("question-options");
+      optionsContainer.innerHTML = "";
+
+      question.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left p-4 rounded-lg border border-stone-300 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/60 hover:bg-amber-100/30 dark:hover:bg-stone-850 text-sm md:text-base transition font-medium math-render";
+        btn.onclick = () => selectAnswer(idx);
+        btn.innerHTML = opt;
+        optionsContainer.appendChild(btn);
+      });
+
+      triggerKaTeX();
+    }
+
+    // SELECIONAR E AVALIAR RESPOSTA NA ARENA
+    function selectAnswer(optIndex) {
+      const quest = classesData[activeQuestIndex];
+      const state = questStates[activeQuestIndex];
+      const question = quest.questions[currentQuestionIndex];
+
+      if (optIndex === question.correct) {
+        // Sucesso: Atacar o Boss
+        applyBossDamage();
+      } else {
+        // Falha: Player toma dano
+        applyPlayerDamage();
+      }
+    }
+
+    // APLICAR DANO NO MONSTRO
+    function applyBossDamage() {
+      const quest = classesData[activeQuestIndex];
+      const state = questStates[activeQuestIndex];
+      
+      // O monstro toma dano correspondente a 1/5 da vida máxima dele por acerto
+      const damage = quest.boss.maxHp / 5;
+      state.bossHp = Math.max(0, state.bossHp - damage);
+
+      // Animações de ataque
+      const sprite = document.getElementById("boss-sprite");
+      sprite.classList.add("boss-shake");
+      const slash = document.getElementById("combat-slash");
+      slash.classList.remove("hidden");
+      
+      setTimeout(() => {
+        sprite.classList.remove("boss-shake");
+        slash.classList.add("hidden");
+      }, 500);
+
+      updateBossHpBar();
+
+      // Recompensas imediatas
+      gainXp(10);
+      gainGold(4);
+
+      if (state.bossHp <= 0) {
+        // Vitória contra o boss
+        state.completed = true;
+        gainXp(40);
+        gainGold(15);
+        loadQuest(activeQuestIndex);
+        checkGlobalCompletion();
+      } else {
+        // Próxima pergunta
+        const nextQ = currentQuestionIndex + 1;
+        if (nextQ < quest.questions.length) {
+          loadQuestion(nextQ);
+        } else {
+          // Caso incomum, se passar as perguntas mas boss tiver vida (reseta perguntas)
+          loadQuestion(0);
+        }
+      }
+    }
+
+    // PLAYER RECEBE DANO POR ERRO
+    function applyPlayerDamage() {
+      // Dano fixo de 20 HP por erro
+      hero.hp = Math.max(0, hero.hp - 20);
+      updateHeaderStatus();
+
+      // Flash vermelho na tela
+      const appBody = document.getElementById("app-screen");
+      appBody.classList.add("bg-red-500/10");
+      setTimeout(() => appBody.classList.remove("bg-red-500/10"), 200);
+
+      if (hero.hp <= 0) {
+        openModal("modal-defeat");
+      } else {
+        alert("Resposta Incorreta! O monstro golpeou você. Veja a dica ou tente outra alternativa.");
+      }
+    }
+
+    // ATUALIZAR BARRA DE VIDA DO MONSTRO
+    function updateBossHpBar() {
+      const quest = classesData[activeQuestIndex];
+      const state = questStates[activeQuestIndex];
+      document.getElementById("boss-hp-text").innerText = `${state.bossHp}/${quest.boss.maxHp}`;
+      const hpPercentage = (state.bossHp / quest.boss.maxHp) * 100;
+      document.getElementById("boss-hp-bar").style.width = `${hpPercentage}%`;
+    }
+
+    // EXIBIR DICA DA PERGUNTA
+    function revealHint() {
+      const quest = classesData[activeQuestIndex];
+      const question = quest.questions[currentQuestionIndex];
+      const hintDisplay = document.getElementById("hint-display");
+
+      // Verificar Ouro ou gratuidade para magos
+      if (hero.class === "Mage" || hero.gold >= 5) {
+        if (hero.class !== "Mage") {
+          hero.gold -= 5;
+        }
+        updateHeaderStatus();
+        hintDisplay.innerHTML = question.hint;
+        hintDisplay.classList.remove("hidden");
+        triggerKaTeX();
+      } else {
+        alert("Você não possui moedas de ouro suficientes para comprar este conselho arcano!");
+      }
+    }
+
+    // COMPRAR ITEM NA LOJA
+    function buyItem(item) {
+      if (item === "potion") {
+        if (hero.gold >= 15) {
+          hero.gold -= 15;
+          hero.hp = Math.min(hero.maxHp, hero.hp + 50);
+          updateHeaderStatus();
+          alert("Poção consumida! +50 Pontos de Vida (HP).");
+        } else {
+          alert("Ouro insuficiente para comprar a poção de cura.");
+        }
+      } else if (item === "hint") {
+        if (hero.gold >= 5) {
+          hero.gold -= 5;
+          updateHeaderStatus();
+          alert("Pergaminho comprado! Use-o clicando em 'Ver dica da questão' na Arena.");
+        } else {
+          alert("Ouro insuficiente.");
+        }
+      }
+    }
+
+    // MECÂNICA DE DERROTA E CURA
+    function healFromShop() {
+      if (hero.gold >= 15) {
+        hero.gold -= 15;
+        hero.hp = Math.min(hero.maxHp, hero.hp + 50);
+        updateHeaderStatus();
+        closeModal("modal-defeat");
+      } else {
+        alert("Sua bolsa está vazia! Realize o Rito de Cura Rápida resolvendo os desafios fundamentais.");
+      }
+    }
+
+    function triggerQuickCura() {
+      closeModal("modal-defeat");
+      document.getElementById("quick-cura-screen").classList.remove("hidden");
+      
+      // Gera conta matemática simples aleatória
+      const n1 = Math.floor(Math.random() * 8) + 2;
+      const n2 = Math.floor(Math.random() * 8) + 2;
+      activeQuickMathAnswer = n1 * n2;
+      document.getElementById("quick-math-expr").innerText = `${n1} x ${n2} = ?`;
+      document.getElementById("quick-math-answer").value = "";
+    }
+
+    function submitQuickCura() {
+      const ans = parseInt(document.getElementById("quick-math-answer").value);
+      if (ans === activeQuickMathAnswer) {
+        hero.hp = Math.round(hero.maxHp * 0.5); // cura 50% da vida total
+        updateHeaderStatus();
+        document.getElementById("quick-cura-screen").classList.add("hidden");
+        alert("Cura mental bem sucedida! Suas energias foram restauradas.");
+      } else {
+        alert("Resposta errada. O fluxo de magia falhou! Tente novamente.");
+        triggerQuickCura();
+      }
+    }
+
+    // SISTEMA DE GANHO DE XP E RECOMPENSAS
+    function gainXp(amount) {
+      hero.xp += Math.round(amount * hero.xpMultiplier);
+      if (hero.xp >= hero.nextLevelXp) {
+        hero.level++;
+        hero.xp -= hero.nextLevelXp;
+        hero.nextLevelXp = Math.round(hero.nextLevelXp * 1.5);
+        hero.maxHp = Math.round(hero.maxHp * 1.15);
+        hero.hp = hero.maxHp; // Cura ao passar de nível
+        alert(`✨ EVOLUÇÃO! Você atingiu o Nível ${hero.level}! Seu HP máximo aumentou.`);
+      }
+      updateHeaderStatus();
+    }
+
+    function gainGold(amount) {
+      hero.gold += Math.round(amount * hero.goldMultiplier);
+      updateHeaderStatus();
+    }
+
+    // VERIFICA SE TODAS AS QUESTS FORAM CONCLUÍDAS
+    function checkGlobalCompletion() {
+      const allDone = questStates.every(state => state.completed);
+      if (allDone) {
+        setTimeout(() => {
+          alert("⚔️ PARABÉNS! Você derrotou os cinco guardiões intelectuais de Mathgard e completou toda a sua trilha de recuperação! Gerando o seu pergaminho de mestre...");
+          showCertificate();
+        }, 800);
+      }
+    }
+
+    // EXIBIR CERTIFICADO PARA IMPRESSÃO
+    function showCertificate() {
+      document.getElementById("cert-hero-name").innerText = hero.name;
+      const certArea = document.getElementById("certificate-print-area");
+      certArea.classList.remove("hidden");
+      
+      // Adiciona botão para imprimir no painel central
+      const activeQuestContent = document.getElementById("quest-content");
+      activeQuestContent.innerHTML = `
+        <div class="text-center bg-green-500/10 p-6 rounded-lg border-2 border-green-500 my-4">
+          <h2 class="text-2xl font-bold text-green-700 dark:text-green-400 mb-2">🎉 Jornada Completa!</h2>
+          <p class="text-xs mb-4">Você se provou um legítimo sábio matemático de Mathgard. Gere seu diploma físico e assine-o.</p>
+          <button onclick="window.print()" class="bg-medieval-amber hover:bg-amber-800 text-white font-bold py-3 px-6 rounded-lg shadow-lg">
+            <i class="fa-solid fa-print mr-2"></i> Imprimir Pergaminho de Maestria
+          </button>
+        </div>
+      `;
+      switchTab("teoria");
+    }
+
+    // MODAL HELPERS
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // MUDAR TEMA CLARO/ESCURO
+    function toggleTheme() {
+      document.documentElement.classList.toggle("dark");
+    }
+
+    // GATILHO DE RENDERIZAÇÃO DO KATEX
+    function triggerKaTeX() {
+      // Procura todas as classes com .math-render e processa o KaTeX
+      const containers = document.querySelectorAll(".math-render");
+      containers.forEach(container => {
+        renderMathInElement(container, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+            { left: "\\(", right: "\\)", display: false },
+            { left: "\\[", right: "\\]", display: true }
+          ],
+          throwOnError: false
+        });
+      });
+    }
+  </script>
+</body>
+</html>
